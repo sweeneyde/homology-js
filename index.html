@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Homology Calculator</title>
+</head>
+<body>
+    <div>
+        <h1>Homology Calculator</h1>
+        <p>
+            To use this calculator,
+            consider a shape (cell complex) and give a name
+            to each face (cell) of the shape.
+            In the first input box, list the faces
+            of each dimension. In the second input box,
+            specify the boundary of each face in terms
+            of the cells one dimension lower.
+            The output box will list the
+            <a href="https://en.wikipedia.org/wiki/Homology_(mathematics)">homology</a>
+            of the resulting shape,
+            an algebraic structure representing
+            how the holes in each dimension fit together.
+        </p>
+        <p>
+            The "Cell Names by Dimension" box
+            should consist of a number of lines,
+            each line consisting of an
+            integer, followed by a colon,
+            followed by a comma-separated list of names
+            in that dimension.
+            Cell names can include ascii letters or digits or underscores, but cannot start with a digit.
+        </p>
+        <p>
+            Each line in the "Boundary" box
+            should consist of a cell name, followed by a colon,
+            followed by a chain of cells one dimension lower.
+            A chain consists of a list of cell names,
+            perhaps preceded by integer coefficients,
+            separated by <code>+</code>
+            and <code>-</code> signs.
+            Semicolons (<code>;</code>) are treated
+            the same as line breaks, so
+            multiple cell boundaries
+            can be specified in the same physical line.
+            Whitespace other than line breaks is generally ignored.
+        </p>
+        <p>
+            Click through the buttons at the top to see
+            example inputs and results.
+        </p>
+
+        <h2>Cell Names by Dimension</h2>
+        <textarea id="cell_names" name="cell_names" rows="4" cols="80" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
+
+        <h2>Boundary</h2>
+        <textarea id="boundary" name="boundary" rows="5" cols="80" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
+
+        <h2>Homology Result</h2>
+        <button onclick="update()">Compute</button>
+        <input type="checkbox" id="auto_check" name="auto_check" value="Auto Update" checked>
+        <label for="auto_check">Update automatically as I type</label>
+        <br/>
+        <textarea id="output_textarea" name="output" rows=10 cols=80 readonly></textarea>
+
+        <h2>Example Inputs</h2>
+        <button onclick="do_example('hollow tetrahedron')">Hollow Tetrahedron</button>
+        <button onclick="do_example('hollow cube')">Hollow Cube</button>
+        <button onclick="do_example('hollow octahedron')">Hollow Octahedron</button>
+        <button onclick="do_example('sphere_cw')">Sphere (one cell)</button>
+        <br/>
+        <button onclick="do_example('torus_simp')">Torus (simplicial complex with 14 triangles)</button>
+        <button onclick="do_example('torus_delta')">Torus (Delta complex with two triangles)</button>
+        <button onclick="do_example('torus_cw')">Torus (cell complex with one square)</button>
+        <br/>
+        <button onclick="do_example('rp2_simp')">Real Projective Plane (simplicial complex)</button>
+        <button onclick="do_example('rp2_delta')">Real Projective Plane (Delta complex with two triangles)</button>
+        <button onclick="do_example('rp2_cw')">Real Projective Plane (cell complex with one bigon)</button>
+        <br/>
+        <button onclick="do_example('T3')">3-Torus</button>
+        <button onclick="do_example('genus2')">Genus 2 Surface</button>
+        <button onclick="do_example('genus3')">Genus 3 Surface</button>
+        <button onclick="do_example('klein')">Klein bottle</button>
+        <br/>
+        <button onclick="do_example('z2_bar')">Bar Resolution for Z/2Z</button>
+        <button onclick="do_example('z3_bar')">Bar Resolution for Z/3Z</button>
+        <br/>
+        <button onclick="do_example('torus_reduced')">Reduced Homology of Torus</button>
+        <button onclick="do_example('co_klein')">Cohomology of Klein bottle</button>
+        <br/>
+        <small>Torus and Real Projective Plane simplicial complexes
+        are based on <code>sage.topology.simplicial_complex_examples</code></small>
+
+        <h2>How it works</h2>
+        <p>
+            For an introduction to homology, see
+            <a href="https://pi.math.cornell.edu/~hatcher/AT/ATch2.pdf">Hatcher's free textbook</a>.
+            Homology is defined as "(kerel of boundary) modulo (image of boundary)",
+            often using the terminology "cycles modulo boundaries".
+            More rigorously, if we define <var>C<sub>i</sub></var>
+            to be chains (i.e. formal sums) of <var>i</var>-dimensional-cells,
+            and let <var>∂<sub>i</sub> : C<sub>i</sub> → C<sub>i-1</sub></var>
+            be the Abelian group homomorphism that maps a cell to its boundary,
+            then we define <var>Z<sub>i</sub> = ker ∂<sub>i</sub></var>
+            and <var>B<sub>i</sub> = im ∂<sub>i+1</sub></var>,
+            and then <var>H<sub>i</sub></var> is the quotient <var>Z<sub>i</sub> / B<sub>i</sub></var>
+            of Abelian groups.
+        </p>
+        <h3>Example 1</h3>
+        <p>
+            Suppose that <var>x</var>, <var>y</var>, <var>z</var> are 1-cells
+            and each with boundary <var>p-q</var> and
+            that <var>F</var> is a 2-cell with boundary <var>2x - 2y</var>.
+            We'll compute <var>H<sub>1</sub> = Z<sub>1</sub> / B<sub>1</sub></var>.
+        </p>
+        <p>
+            <var>Z<sub>1</sub></var> is
+            <ul>
+                <li><var>{ax + by + cz : a, b, c integers with boundary(ax + by + cz) = 0}</var>, which is</li>
+                <li><var>{ax + by + cz : a, b, c integers with a(p-q) + b(p-q) + c(p-q) = 0}</var>, which is</li>
+                <li><var>{ax + by + cz : a, b, c integers with a + b + c = 0}</var>, which is</li>
+                <li><var>{ax - (a+c)y + cz : a, c integers}</var>, which is</li>
+                <li><var>{a(x-y) + c(z-y) : a, c integers}</var>.</li>
+            </ul>
+            If we write <var>u=x-y</var> and <var>v=z-y</var>
+            then <var>Z<sub>1</sub> = &lt;u, v&gt;</var>
+            is the free Abelian group generated by <var>u</var> and <var>v</var>.
+            But since <var>B<sub>1</sub></var> is generated by <var>2x-2y = 2u</var>,
+            this shows that <var>H<sub>1</sub> = Z<sub>1</sub>/B<sub>1</sub></var> has
+            the Abelian group presentation <var>&lt;u, v | 2u=0&gt;</var>,
+            i.e., <var>H<sub>1</sub> ≅ ℤ/2ℤ ⊕ ℤ</var>.
+        </p>
+        <h3>Example 2</h4>
+        <p>
+            It's always true that <var>Z<sub>i</sub></var>
+            is a free Abelian group because it's a subgroup
+            of the free Abelian group <var>C<sub>i</sub></var>.
+            This lines up with what we saw in Example 1.
+            So beyond translating into new variables like in Example 1,
+            the heart of the calculator must manipulate
+            Abelian group presentations
+            with several potentially complicated relations
+            to get to a normalized form.
+            We can do this with the Abelian group version
+            of <a href="https://en.wikipedia.org/wiki/Tietze_transformations">Tietze tranformations</a>.
+            Here's an example:
+            <ul>
+                <li>Start with <var>&lt;a, b | 36b = 28a&gt;</var></li>
+                <li>Add a new variable to get <var>&lt;a, b, c | 36b=28a, c=a-b&gt;</var></li>
+                <li>Simplify to <var>&lt;a, b, c | 36b=28(b+c), a=b+c&gt;</var></li>
+                <li>Simplify to <var>&lt;a, b, c | 8b=28c, a=b+c&gt;</var></li>
+                <li>Eliminate a variable to get <var>&lt;b, c | 8b=28c&gt;</var></li>
+                <li>Add a new variable to get <var>&lt;b, c, d | 8b=28c, d=b-3c&gt;</var></li>
+                <li>Simplify to <var>&lt;b, c, d | 8(d+3c)=28c, b=d+c3&gt;</var></li>
+                <li>Simplify to <var>&lt;b, c, d | 8d=4c, b=d+c3&gt;</var></li>
+                <li>Eliminate a variable to get <var>&lt;c, d | 8d=4c&gt;</var></li>
+                <li>Add a new variable to get <var>&lt;c, d, e | 8d=4c, e=c-2d&gt;</var></li>
+                <li>Simplify to get <var>&lt;c, d, e | 8d=4(e+2d), c=e+2d&gt;</var> </li>
+                <li>Simplify to get <var>&lt;c, d, e | 0=4e, c=e+2d&gt;</var></li>
+                <li>Eliminate a variable to get <var>&lt;d, e | 0=4e&gt;</var></li>
+                <li>Conclude that the group is <var>ℤ ⊕ ℤ/4ℤ</var>.</li>
+            </ul>
+            The above sort of Euclidean algorithm
+            can be done systematically
+            for many variables and relations simultaneously
+            by working with matrices and using
+            row and column operations to compute
+            the <a href="https://en.wikipedia.org/wiki/Smith_normal_form">Smith Normal Form</a> of the matrices.
+        </p>
+    </div>
+    <script type="text/javascript" src="./smith.js"></script>
+    <script type="text/javascript" src="./examples.js"></script>
+    <script type="text/javascript" src="./interface.js"></script>
+</body>
+</html>
