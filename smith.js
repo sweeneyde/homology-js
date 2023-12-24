@@ -523,7 +523,21 @@ function chain_complex_from_names(dimension_face_names, boundary) {
             dimension_to_size:dimension_to_size}
 }
 
-function homology_from_names(dimension_face_names, boundary) {
+function transpose(A, num_A_cols) {
+    check_rectangular(A, num_A_cols);
+    let result = [];
+    for (j = 0; j < num_A_cols; j++) {
+        let new_row = [];
+        A.forEach((old_row) => {
+            new_row.push(old_row[j]);
+        });
+        result.push(new_row);
+    }
+    check_rectangular(result, A.length);
+    return result;
+}
+
+function homology_from_names(dimension_face_names, boundary, co) {
     let {min_dim, max_dim, matrices, dimension_to_size}
         = chain_complex_from_names(dimension_face_names, boundary);
     result = [];
@@ -532,7 +546,13 @@ function homology_from_names(dimension_face_names, boundary) {
         let B = matrices.get(dim);
         let n = dimension_to_size.get(dim + 1);
         let m = dimension_to_size.get(dim);
-        let H = homology(A, n, B, m);
+        let H;
+        if (co) {
+            H = homology(transpose(B, m), B.length, transpose(A, n), A.length);
+        }
+        else {
+            H = homology(A, n, B, m);
+        }
         let name_list = dimension_face_names.get(dim);
         function to_names(gen) {
             let namegen = [];

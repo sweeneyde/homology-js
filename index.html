@@ -42,7 +42,9 @@
             specify the boundary of each face in terms
             of the cells one dimension lower.
             The output box will list the
+            (integral, cellular)
             <a target="_blank" rel="noopener noreferrer" href="https://en.wikipedia.org/wiki/Homology_(mathematics)">homology</a>
+            or cohomology
             of the resulting shape,
             an algebraic structure representing
             how the holes in each dimension fit together.
@@ -71,6 +73,14 @@
             Whitespace other than line breaks is generally ignored.
         </p>
         <p>
+            If the "cohomology" box is checked,
+            cohomology is computed instead of homology.
+            For the listed generators, a cell <var>a</var> is
+            identified with its dual cochain, so <var>a(a)=1</var>,
+            but <var>a(x)=0</var> for any cell <var>x</var>
+            other than <var>a</var>.
+        </p>
+        <p>
             Click through the "Example Inputs" buttons
             to see various possible example inputs.
         </p>
@@ -89,6 +99,8 @@
         <button onclick="update()">Compute</button>
         <input type="checkbox" id="auto_check" name="auto_check" value="Auto Update" autocomplete="off" checked>
         <label for="auto_check">Compute automatically as I type</label>
+        <input type="checkbox" id="co_check" name="co_check" value="Cohomology" autocomplete="off">
+        <label for="co_check">Cohomology</label>
         <br/>
         <textarea id="output_textarea" name="output_textarea" class="output_textarea" readonly></textarea>
 
@@ -113,9 +125,7 @@
         <br/>
         <button onclick="do_example('z2_bar')">Bar Resolution for Z/2Z</button>
         <button onclick="do_example('z3_bar')">Bar Resolution for Z/3Z</button>
-        <br/>
         <button onclick="do_example('torus_reduced')">Reduced Homology of Torus</button>
-        <button onclick="do_example('co_klein')">Cohomology of Klein bottle</button>
         <br/>
         <small>Torus and Real Projective Plane simplicial complexes
         are based on SageMath's

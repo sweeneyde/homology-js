@@ -115,12 +115,12 @@ function parse_boundary(text) {
     return result;
 }
 
-function get_homology_result_string(cell_names_text, boundary_text) {
+function get_homology_result_string(cell_names_text, boundary_text, co) {
     let result = null;
     try {
         let cell_names = parse_cell_names(cell_names_text);
         let boundary = parse_boundary(boundary_text);
-        result = homology_from_names(cell_names, boundary);
+        result = homology_from_names(cell_names, boundary, co);
     }
     catch (err) {
         console.error(err);
@@ -128,7 +128,13 @@ function get_homology_result_string(cell_names_text, boundary_text) {
     }
     let string_result = [];
     result.forEach(([dim, {free_generators, torsion_generators}]) => {
-        let head = `H_${dim}:`;
+        let head;
+        if (co) {
+            head = `H^${dim}:`
+        }
+        else {
+            head = `H_${dim}:`
+        }
         function print(s) {
             line = head + " ".repeat(6 - head.length) + s;
             string_result.push(line);
@@ -150,15 +156,16 @@ function get_homology_result_string(cell_names_text, boundary_text) {
 
 let cell_names_textarea = document.getElementById("cell_names");
 let boundary_textarea = document.getElementById("boundary");
-// let output_div = document.getElementById("output_div");
 let output_textarea = document.getElementById("output_textarea");
 let auto_check = document.getElementById("auto_check");
+let co_check = document.getElementById("co_check");
 
 function update() {
     output_textarea.value = "...";
     let result_string = get_homology_result_string(
         cell_names_textarea.value,
-        boundary_textarea.value);
+        boundary_textarea.value,
+        co_check.checked);
     output_textarea.value = result_string;
 }
 
@@ -178,6 +185,7 @@ if (cell_names_textarea.addEventListener) {
     cell_names_textarea.attachEvent('onpropertychange', keystroke);
     boundary_textarea.addEventListener('onpropertychange', keystroke);
 }
+co_check.addEventListener('change', update);
 
 function do_example(ex_name) {
     let [ex_names, ex_boundary] = EXAMPLES.get(ex_name);

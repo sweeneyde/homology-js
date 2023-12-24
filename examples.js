@@ -176,16 +176,6 @@ let EXAMPLES = new Map([
         "a:0; b:0;\n" +
         "T: a + b - a - b"
     )]],
-    ['co_klein', [(
-        "0: v\n" +
-        "-1: a, b\n" +
-        "-2: K"
-    ), (
-        "v: 0\n" +
-        "a: 2K\n" +
-        "b: 0\n" +
-        "K: 0\n"
-    )]],
     ['example_1', [(
         "0: p, q\n" +
         "1: x, y, z\n" +
