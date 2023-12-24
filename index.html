@@ -2,9 +2,31 @@
 <html>
 <head>
     <title>Homology Calculator</title>
+    <style>
+        .img-center {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .inline-div {
+           display:inline-block;
+        }
+        .input_textarea {
+            resize: both;
+            height: 150px;
+            width: 450px;
+            white-space: pre;
+        }
+        .output_textarea {
+            resize: both;
+            height: 150px;
+            width: 750px;
+            white-space: pre;
+        }
+    </style>
 </head>
 <body>
-    <div>
+    <div style="max-width:1000px;margin:auto">
         <h1>Homology Calculator</h1>
         <p>
             To use this calculator,
@@ -13,15 +35,13 @@
             For example, take this diagram of a Torus
             from Allen Hatcher's text
             <cite>Algebraic Topology (p. 102)</cite>:
-            <br/>
-            <img src="./hatcher_torus_cells.png" width="200" height="200" alt="Torus Cell Structure">
-            <br/>
+            <img src="./hatcher_torus_cells.png" width="200" height="200" alt="Torus Cell Structure" class="img-center">
             In the first input box below, list the faces
             of each dimension. In the second input box,
             specify the boundary of each face in terms
             of the cells one dimension lower.
             The output box will list the
-            <a href="https://en.wikipedia.org/wiki/Homology_(mathematics)">homology</a>
+            <a target="_blank" rel="noopener noreferrer" href="https://en.wikipedia.org/wiki/Homology_(mathematics)">homology</a>
             of the resulting shape,
             an algebraic structure representing
             how the holes in each dimension fit together.
@@ -54,18 +74,22 @@
             to see various possible example inputs.
         </p>
 
-        <h2>Cell Names by Dimension</h2>
-        <textarea id="cell_names" name="cell_names" rows="4" cols="80" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
 
-        <h2>Boundary</h2>
-        <textarea id="boundary" name="boundary" rows="5" cols="80" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
+        <div class="inline-div" background="red">
+            <h2>Cell Names by Dimension</h2>
+            <textarea class="input_textarea" id="cell_names" name="cell_names" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
+        </div>
+        <div class="inline-div">
+            <h2>Boundary</h2>
+            <textarea class="input_textarea" id="boundary" name="boundary" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
+        </div>
 
         <h2>Homology Result</h2>
         <button onclick="update()">Compute</button>
         <input type="checkbox" id="auto_check" name="auto_check" value="Auto Update" checked>
         <label for="auto_check">Compute automatically as I type</label>
         <br/>
-        <textarea id="output_textarea" name="output" rows=10 cols=80 readonly></textarea>
+        <textarea id="output_textarea" name="output_textarea" class="output_textarea" readonly></textarea>
 
         <h2>Example Inputs</h2>
         <button onclick="do_example('hollow tetrahedron')">Hollow Tetrahedron</button>
@@ -95,16 +119,13 @@
         <small>Torus and Real Projective Plane simplicial complexes
         are based on <code>sage.topology.simplicial_complex_examples</code></small>
         
-        <br/>
-        <br/>
-        <br/>
-        <h2>How it works</h2>
+        <h1>How it works</h1>
         <p>
             For an introduction to homology, see
-            <a href="https://pi.math.cornell.edu/~hatcher/AT/ATch2.pdf">Hatcher's free textbook</a>.
+            <a target="_blank" rel="noopener noreferrer" href="https://pi.math.cornell.edu/~hatcher/AT/ATch2.pdf">Hatcher's free textbook</a>.
             Homology is defined as "(kerel of boundary) modulo (image of boundary)",
             often using the terminology "cycles modulo boundaries".
-            More rigorously, if we define <var>C<sub>i</sub></var>
+            More explicitly, if we define <var>C<sub>i</sub></var>
             to be chains (i.e. formal sums) of <var>i</var>-dimensional-cells,
             and let <var>∂<sub>i</sub> : C<sub>i</sub> → C<sub>i-1</sub></var>
             be the Abelian group homomorphism that maps a cell to its boundary,
@@ -153,7 +174,7 @@
             with several potentially complicated relations
             to get to a normalized form.
             We can do this with the Abelian group version
-            of <a href="https://en.wikipedia.org/wiki/Tietze_transformations">Tietze tranformations</a>.
+            of <a target="_blank" rel="noopener noreferrer" href="https://en.wikipedia.org/wiki/Tietze_transformations">Tietze tranformations</a>.
             Here's an example:
             <ul>
                 <li>Start with 〈 <var>a, b</var> | <var>36b = 28a</var> 〉</li>
@@ -176,8 +197,8 @@
             for many variables and relations simultaneously
             by working with matrices and using
             row and column operations to compute
-            the <a href="https://en.wikipedia.org/wiki/Smith_normal_form">Smith Normal Form</a> of the matrices.
-            See the source code <a href="https://github.com/sweeneyde/homology-js/blob/main/smith.js">here</a>.
+            the <a target="_blank" rel="noopener noreferrer" href="https://en.wikipedia.org/wiki/Smith_normal_form">Smith Normal Form</a> of the matrices.
+            See the source code <a target="_blank" rel="noopener noreferrer" href="https://github.com/sweeneyde/homology-js/blob/main/smith.js">here</a>.
         </p>
         <p>
             Click <button onclick="do_example('tietze_result')">here</button>

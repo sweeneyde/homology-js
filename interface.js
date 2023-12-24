@@ -15,7 +15,7 @@ function parse_cell_names(text) {
         let [dim_str, rest] = colonsplit;
         dim_str = dim_str.trim();
         if (!/^[-+]?\d+$/.test(dim_str)) {
-            throw new Error(`couldn't parse dimension ${dim}`);
+            throw new Error(`couldn't parse dimension ${dim_str}`);
         }
         let dim = parseInt(dim_str);
         rest = rest.trim();
