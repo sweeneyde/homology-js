@@ -15,7 +15,7 @@
         .input_textarea {
             resize: both;
             height: 150px;
-            width: 350px;
+            width: 400px;
             white-space: pre;
         }
         .output_textarea {
@@ -24,10 +24,28 @@
             width: 100%;
             white-space: pre;
         }
+        h1 {
+            display: block;
+            font-size: 2em;
+            margin-top: 1.5em;
+            margin-bottom: 0.67em;
+            margin-left: 0;
+            margin-right: 0;
+            font-weight: bold;
+        }
+        h2 {
+            display: block;
+            font-size: 1.2em;
+            margin-top: 1.0em;
+            margin-bottom: 0.2em;
+            margin-left: 0;
+            margin-right: 0;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
-    <div style="max-width:1000px;margin:auto">
+    <div style="max-width:960px;margin:auto">
         <h1>Homology Calculator</h1>
         <p>
             To use this calculator,
@@ -145,7 +163,7 @@
             (ker ∂<sub><var>i</var></sub>) / (im ∂<sub><var>i+1</var></sub>)
             of Abelian groups.
         </p>
-        <h3>Example 1</h3>
+        <h2>Example 1</h2>
         <p>
             Suppose that <var>x</var>, <var>y</var>, <var>z</var> are 1-cells
             and each with boundary <var>p − q</var> and
@@ -174,7 +192,7 @@
             Click <button onclick="do_example('example_1')">here</button>
             to compute Example 1.
         </p>
-        <h3>Example 2</h4>
+        <h2>Example 2</h2>
         <p>
             It's always true that ker ∂<sub><var>i</var></sub>
             is a free Abelian group because it's a subgroup
