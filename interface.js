@@ -163,8 +163,11 @@ function update() {
 }
 
 function keystroke() {
-    if (auto_check.value) {
+    if (auto_check.checked) {
         update();
+    }
+    else {
+        output_textarea.value = "";
     }
 }
 // https://stackoverflow.com/a/14029861/11461120

@@ -10,17 +10,18 @@
         }
         .inline-div {
            display:inline-block;
+           vertical-align: top;
         }
         .input_textarea {
             resize: both;
             height: 150px;
-            width: 450px;
+            width: 350px;
             white-space: pre;
         }
         .output_textarea {
-            resize: both;
+            resize: vertical;
             height: 150px;
-            width: 750px;
+            width: 100%;
             white-space: pre;
         }
     </style>
@@ -75,7 +76,7 @@
         </p>
 
 
-        <div class="inline-div" background="red">
+        <div class="inline-div">
             <h2>Cell Names by Dimension</h2>
             <textarea class="input_textarea" id="cell_names" name="cell_names" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
         </div>
@@ -86,7 +87,7 @@
 
         <h2>Homology Result</h2>
         <button onclick="update()">Compute</button>
-        <input type="checkbox" id="auto_check" name="auto_check" value="Auto Update" checked>
+        <input type="checkbox" id="auto_check" name="auto_check" value="Auto Update" autocomplete="off" checked>
         <label for="auto_check">Compute automatically as I type</label>
         <br/>
         <textarea id="output_textarea" name="output_textarea" class="output_textarea" readonly></textarea>
@@ -117,9 +118,10 @@
         <button onclick="do_example('co_klein')">Cohomology of Klein bottle</button>
         <br/>
         <small>Torus and Real Projective Plane simplicial complexes
-        are based on <code>sage.topology.simplicial_complex_examples</code></small>
+        are based on SageMath's
+        <code>sage.topology.simplicial_complex_examples</code>.</small>
         
-        <h1>How it works</h1>
+        <h1>How It Works</h1>
         <p>
             For an introduction to homology, see
             <a target="_blank" rel="noopener noreferrer" href="https://pi.math.cornell.edu/~hatcher/AT/ATch2.pdf">Hatcher's free textbook</a>.
