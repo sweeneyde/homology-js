@@ -41,17 +41,25 @@ function identity_matrix(n) {
 }
 
 function smithify(A, num_cols) {
+    // Find matrices S and T such that SAT is diagonal.
     check_rectangular(A, num_cols);
     let D = A.map((row) => row.map((x) => BigInt(x)));
     let m = D.length;
     let n = num_cols;
 
-    // We'll make SAT == D.
     // Initialize S, T, and their inverses to identity matrices.
     let S = identity_matrix(m);
     let Sinv = identity_matrix(m);
     let T = identity_matrix(n);
     let Tinv = identity_matrix(n);
+
+    // The Algorithm
+    // -------------
+    // Do row and column operations to mutate D
+    // until D in Smith Normal Form.
+    // Do the corresponding row ops to S and col ops to T
+    // to maintain the invariant the SAT == D.
+    // Also keep track of the matrix inverses Sinv and Tinv.
 
     function generalized_row_op(i1, i2, x, y, z, w) {
         // Mutate D by left-multiplying
@@ -172,7 +180,6 @@ function smithify(A, num_cols) {
             for (i = k + 1; i < m; i++) {
                 improve_with_row_ops(k, i, k);
             }
-
             let done_in_row = true;
             for (j = k + 1; j < n; j++) {
                 if (D[k][j]) {
@@ -180,13 +187,13 @@ function smithify(A, num_cols) {
                 }
             }
             if (done_in_row) {
+                // The row ops fixing this column didn't mess up this row.
                 break;
             }
 
             for (j = k + 1; j < n; j++) {
                 improve_with_col_ops(k, j, k);
             }
-
             let done_in_col = true;
             for (i = k + 1; i < m; i++) {
                 if (D[i][k]) {
@@ -194,6 +201,7 @@ function smithify(A, num_cols) {
                 }
             }
             if (done_in_col) {
+                // The column ops fixing this row didn't mess up this column.
                 break;
             }
         }
@@ -217,12 +225,15 @@ function smithify(A, num_cols) {
                 }
             }
             // Handle a non-divisibility
+
             // [A  0] [1  0]  ==  [A  0]
             // [0  B] [1  1]  ==  [B  B]
             generalized_col_op(k, k+1, 1n, 1n, 0n, 1n);
+
             // [A  0]  -->  [gcd(A,B)  X]
             // [B  B]       [       0  Y]
             improve_with_row_ops(k, k+1, k);
+
             // Because we used row operations, X and Y are multiples of B,
             // which is a multiple of gcd(A,B). To finish off, do
             // [gcd(A,B), X]  -->  [gcd(A,B), 0]
@@ -235,7 +246,7 @@ function smithify(A, num_cols) {
         }
     }
 
-    return {D:D, S:S, Sinv:Sinv, T:T, Tinv:Tinv}; 
+    return {D:D, S:S, Sinv:Sinv, T:T, Tinv:Tinv};
 }
 
 function cokernel(A, num_cols) {
@@ -249,7 +260,7 @@ function cokernel(A, num_cols) {
     D = smith_A.D
 
     // coker A = Z^m / im(UDV)
-    //         = Z^m / (UD)
+    //         = Z^m / im(UD)
     //         = Ubar * (Z^m / im(D)),
     // where Ubar * [x + (im D)] := [Ux + (im UD)],
     // Note that U is a morphism of pairs:
@@ -340,19 +351,21 @@ function homology(A, num_A_cols, B, num_B_cols) {
             }
         }
     }
-    
+
     // Since BA=0, we can write Bbar: coker(A) --> Z^k.
     // defined by Bbar([x]) = Bx.
     // Then homology is (ker B)/(im A) = ker Bbar,
     // since these are both the same subquotient.
     let coker_A = cokernel(A, n);
-    
+
     // compute ker(Bbar: coker(A) --> Z^k)
-    // The torsion in coker(A) is ker(Bbar) because
-    // its image is torsion-free.
+    // Bbar kills all of the torsion in coker(A)
+    // because there's no torsion left in Z^k.
+    // The entire torsion part of coker(A)
+    // is therefore the torsion part of ker(Bbar).
     let torsion_generators = coker_A.torsion_generators;
-    
-    // G: Z^(m-r) --> Z^m
+
+    // Write G: Z^(m-r) --> Z^m
     // Such that [] o G: Z^(m-r) --> coker(A)
     // is embedding of free summand
     let G = [];
@@ -360,14 +373,14 @@ function homology(A, num_A_cols, B, num_B_cols) {
     let m_r = freegen.length;
     // transpose: freegen has m_r lists of m each
     // we want G to have m lists of m_r each
-    for (i=0; i < m; i++) {
+    for (i = 0; i < m; i++) {
         let row = [];
         for (j = 0; j < m_r; j++) {
             row[j] = freegen[j][i];
         }
         G.push(row);
     }
-    
+
     // H = (ker B) / (im A)
     //   = ker(Bbar: coker(A) --> Z^k)
     //   = ker(Bbar: Tors(coker(A)) (+) Free(coker(A)) --> Z^k)
@@ -378,7 +391,7 @@ function homology(A, num_A_cols, B, num_B_cols) {
     //   = [G({v in Z^(m-r) : Bbar([G(v)]) = 0})]
     //   = [G({v in Z^(m-r) : BG(v) = 0})]
     //   = [G(ker(B o G))]
-    
+
     let BG = []
     for (i = 0; i < k; i++) {
         BG[i] = [];

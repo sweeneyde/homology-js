@@ -12,21 +12,21 @@ let EXAMPLES = new Map([
         "1:AAx,ABx,BAx,BBx,AxA,AxB,BxA,BxB,xAA,xAB,xBA,xBB\n" +
         "2:Axx,Bxx,xAx,xBx,xxA,xxB"
     ), (
-        "AAx:AAB-AAA; ABx:ABB-ABA; BAx:BAB-BAA; BBx:BBB-BBA\n" + 
+        "AAx:AAB-AAA; ABx:ABB-ABA; BAx:BAB-BAA; BBx:BBB-BBA\n" +
         "AxA:ABA-AAA; AxB:ABB-AAB; BxA:BBA-BAA; BxB:BBB-BAB\n" +
         "xAA:BAA-AAA; xAB:BAB-AAB; xBA:BBA-ABA; xBB:BBB-ABB\n" +
         "Axx:AxA+ABx-AxB-AAx; xAx:xAA+BAx-xAB-AAx; xxA:xAA+BxA-xBA-AxA\n" +
         "Bxx:BxA+BBx-BxB-BAx; xBx:xBA+BBx-xBB-ABx; xxB:xAB+BxB-xBB-AxB"
     )]],
     ['hollow octahedron', [(
-        "0:Axx,Bxx,xAx,xBx,xxA,xxB\n" + 
+        "0:Axx,Bxx,xAx,xBx,xxA,xxB\n" +
         "1:AAx,ABx,BAx,BBx,AxA,AxB,BxA,BxB,xAA,xAB,xBA,xBB\n" +
         "2:AAA,AAB,ABA,ABB,BAA,BAB,BBA,BBB"
     ), (
         "AAx:xAx-Axx; ABx:xBx-Axx; BAx:xAx-Bxx; BBx:xBx-Bxx\n" +
         "AxA:xxA-Axx; AxB:xxB-Axx; BxA:xxA-Bxx; BxB:xxB-Bxx\n" +
         "xAA:xxA-xAx; xAB:xxB-xAx; xBA:xxA-xBx; xBB:xxB-xBx\n" +
-        "AAA:xAA-AxA+AAx; AAB:xAB-AxB+AAx; ABA:xBA-AxA+ABx\n" + 
+        "AAA:xAA-AxA+AAx; AAB:xAB-AxB+AAx; ABA:xBA-AxA+ABx\n" +
         "ABB:xBB-AxB+ABx; BAA:xAA-BxA+BAx; BAB:xAB-BxB+BAx\n" +
         "BBA:xBA-BxA+BBx; BBB:xBB-BxB+BBx"
     )]],

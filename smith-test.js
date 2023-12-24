@@ -116,7 +116,7 @@ for (loop = 0; loop < 5; loop++) {
             let AT = matrix_multiply(A, n, T, n);
             let S_AT = matrix_multiply(S, m, AT, n);
             assert_equal(S_AT, D, n, info);
-            
+
             // Assert that (Sinv)*D*(Tinv) == A
             let SinvD = matrix_multiply(Sinv, m, D, n);
             let SinvD_Tinv = matrix_multiply(SinvD, n, Tinv, n);
