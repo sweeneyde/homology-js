@@ -186,5 +186,20 @@ let EXAMPLES = new Map([
         "b: 0\n" +
         "K: 0\n"
     )]],
+    ['example_1', [(
+        "0: p, q\n" +
+        "1: x, y, z\n" +
+        "2: F"
+    ), (
+        "x:p-q; y:p-q; z:p-q\n" +
+        "F: 2x-2y\n"
+    )]],
+    ['tietze_result', [(
+        "0: v\n" +
+        "1: a, b\n" +
+        "2: Relation1"
+    ), (
+        "Relation1: 36b - 28a"
+    )]],
 ]);
 

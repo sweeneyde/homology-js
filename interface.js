@@ -92,15 +92,19 @@ function parse_boundary(text) {
                 throw new Error(`Duplicate +- in ${rest}`);
             }
             let sign = chunk.charAt(0) === "+" ? +1 : -1;
-            let name_start = 1 + chunk.slice(1).search(/\D/);
-            if (name_start === 0) {
+            let spaces = chunk.slice(1).search(/\S/);
+            if (spaces === -1) {
+                throw new Error("Empty face name");
+            }
+            let digits = chunk.slice(1 + spaces).search(/\D/);
+            if (digits == -1) {
                 throw new Error(`Integer ${chunk} is not a cell`);
             }
             let coeff = sign;
-            if (name_start > 1) {
-                coeff *= parseInt(chunk.slice(1, name_start))
+            if (digits > 0) {
+                coeff *= parseInt(chunk.slice(1 + spaces, 1 + spaces + digits));
             }
-            let boundary_name = chunk.slice(name_start).trim();
+            let boundary_name = chunk.slice(1 + spaces + digits).trim();
             if (!face_name_regex.test(boundary_name)) {
                 throw new Error(`name ${boundary_name} is invalid`);
             }

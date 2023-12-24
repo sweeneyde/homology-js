@@ -63,7 +63,7 @@
         <h2>Homology Result</h2>
         <button onclick="update()">Compute</button>
         <input type="checkbox" id="auto_check" name="auto_check" value="Auto Update" checked>
-        <label for="auto_check">Update automatically as I type</label>
+        <label for="auto_check">Compute automatically as I type</label>
         <br/>
         <textarea id="output_textarea" name="output" rows=10 cols=80 readonly></textarea>
 
@@ -137,6 +137,9 @@
             this shows that <var>H<sub>1</sub></var> = (ker ∂<sub><var>1</var></sub>) / (im ∂<sub><var>2</var></sub>) has
             the Abelian group presentation 〈 <var>u, v</var> | <var>2u = 0</var> 〉,
             so <var>H<sub>1</sub></var> ≅ ℤ/2ℤ ⊕ ℤ.
+
+            Click <button onclick="do_example('example_1')">here</button>
+            to compute Example 1.
         </p>
         <h3>Example 2</h4>
         <p>
@@ -175,6 +178,12 @@
             row and column operations to compute
             the <a href="https://en.wikipedia.org/wiki/Smith_normal_form">Smith Normal Form</a> of the matrices.
             See the source code <a href="https://github.com/sweeneyde/homology-js/blob/main/smith.js">here</a>.
+        </p>
+        <p>
+            Click <button onclick="do_example('tietze_result')">here</button>
+            to compute the equivalent of Example 2.
+            Generalizing from this example,
+            you could treat this page as an <em>Abelian group simplifier</em>!
         </p>
     </div>
     <script type="text/javascript" src="./smith.js"></script>
