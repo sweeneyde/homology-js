@@ -424,8 +424,6 @@ function homology(A, num_A_cols, B, num_B_cols) {
 }
 
 function chain_complex_from_names(dimension_face_names, boundary) {
-    // console.log(dimension_face_names);
-    // console.log(boundary);
     let name_to_dimension = new Map();
     let name_to_index = new Map();
     let dimension_to_size = new Map([[0, 0]]);
@@ -467,7 +465,6 @@ function chain_complex_from_names(dimension_face_names, boundary) {
         let dim_F = name_to_dimension.get(F);
         dF.forEach(([coeff, face]) => {
             if (!name_to_dimension.has(face)) {
-                console.log(name_to_dimension);
                 throw new Error(`Unknown face "${face}"`);
             }
             dim_face = name_to_dimension.get(face);
@@ -535,7 +532,6 @@ function homology_from_names(dimension_face_names, boundary) {
         let B = matrices.get(dim);
         let n = dimension_to_size.get(dim + 1);
         let m = dimension_to_size.get(dim);
-        console.log(A,B,n,m);
         let H = homology(A, n, B, m);
         let name_list = dimension_face_names.get(dim);
         function to_names(gen) {
