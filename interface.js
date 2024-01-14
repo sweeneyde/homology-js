@@ -78,7 +78,7 @@ function parse_boundary(text) {
             rest = "+" + rest;
         }
         splits = [0];
-        for (i = 1; i < rest.length; i++) {
+        for (let i = 1; i < rest.length; i++) {
             let c = rest.charAt(i);
             if (c === "+" || c === "-") {
                 splits.push(i);
@@ -86,7 +86,7 @@ function parse_boundary(text) {
         }
         splits.push(rest.length);
         chain = [];
-        for (j = 1; j < splits.length; j++) {
+        for (let j = 1; j < splits.length; j++) {
             let chunk = rest.slice(splits[j - 1], splits[j]);
             if (chunk === "") {
                 throw new Error(`Duplicate +- in ${rest}`);

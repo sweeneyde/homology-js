@@ -9,7 +9,7 @@ function xgcd(a, b) {
     let [y, next_y] = [0n, 1n];
     let [g, next_g] = [BigInt(a), BigInt(b)];
     while (next_g) {
-        q = g / next_g;
+        let q = g / next_g;
         [x, next_x] = [next_x, x - q * next_x];
         [y, next_y] = [next_y, y - q * next_y];
         [g, next_g] = [next_g, g - q * next_g];
@@ -30,9 +30,9 @@ function check_rectangular(A, num_cols) {
 
 function identity_matrix(n) {
     let M = [];
-    for (i = 0; i < n; i++) {
+    for (let i = 0; i < n; i++) {
         let row = [];
-        for (j = 0; j < n; j++) {
+        for (let j = 0; j < n; j++) {
             row.push((i == j) ? 1n : 0n);
         }
         M.push(row);
@@ -65,20 +65,20 @@ function smithify(A, num_cols) {
         // Mutate D by left-multiplying
         // the two-row matrix [D[i1,:] ; D[i2, :]]
         // by [x y ; z w]
-        for (jj = 0; jj < n; jj++) {
+        for (let jj = 0; jj < n; jj++) {
             let aa = D[i1][jj];
             let bb = D[i2][jj]
             D[i1][jj] = x*aa + y*bb;
             D[i2][jj] = z*aa + w*bb;
         }
         // The corresponding effects on S and Sinv
-        for (jj = 0; jj < m; jj++) {
+        for (let jj = 0; jj < m; jj++) {
             let aa = S[i1][jj];
             let bb = S[i2][jj];
             S[i1][jj] = x*aa + y*bb;
             S[i2][jj] = z*aa + w*bb;
         }
-        for (jj = 0; jj < m; jj++) {
+        for (let jj = 0; jj < m; jj++) {
             let aa = Sinv[jj][i1];
             let bb = Sinv[jj][i2];
             Sinv[jj][i1] = w*aa - z*bb;
@@ -106,7 +106,7 @@ function smithify(A, num_cols) {
             // This case is important for termination.
             // [ 1  0] [ a]  ==  [a]
             // [-q  1] [qa]      [0]
-            q = b / a
+            let q = b / a;
             generalized_row_op(i1, i2, 1n, 0n, -q, 1n)
             console.assert(D[i1][j] == a);
             console.assert(D[i2][j] == 0);
@@ -125,19 +125,19 @@ function smithify(A, num_cols) {
         // Mutate D by right-multiplying
         // the two-column matrix D[:, j1] | D[:, j2]
         // by [x y ; z w]
-        for (ii = 0; ii < m; ii++) {
+        for (let ii = 0; ii < m; ii++) {
             let aa = D[ii][j1];
             let bb = D[ii][j2];
             D[ii][j1] = x*aa + y*bb;
             D[ii][j2] = z*aa + w*bb;
         }
-        for (ii = 0; ii < n; ii++) {
+        for (let ii = 0; ii < n; ii++) {
             let aa = T[ii][j1];
             let bb = T[ii][j2];
             T[ii][j1] = x*aa + y*bb;
             T[ii][j2] = z*aa + w*bb;
         }
-        for (ii = 0; ii < n; ii++) {
+        for (let ii = 0; ii < n; ii++) {
             let aa = Tinv[j1][ii];
             let bb = Tinv[j2][ii];
             Tinv[j1][ii] = w*aa - z*bb;
@@ -158,7 +158,7 @@ function smithify(A, num_cols) {
         else if (a != 0 && b % a == 0) {
             // [a  qa]  [1  -q]  ==  [a  0]
             //          [0   1]
-            q = b / a
+            let q = b / a
             generalized_col_op(j1, j2, 1n, 0n, -q, 1n)
             console.assert(D[i][j1] == a);
             console.assert(D[i][j2] == 0n);
@@ -175,13 +175,13 @@ function smithify(A, num_cols) {
 
 
     // ===== Phase 1: diagonalize =====
-    for (k = 0; k < m && k < n; k++) {
+    for (let k = 0; k < m && k < n; k++) {
         while (1) {
-            for (i = k + 1; i < m; i++) {
+            for (let i = k + 1; i < m; i++) {
                 improve_with_row_ops(k, i, k);
             }
             let done_in_row = true;
-            for (j = k + 1; j < n; j++) {
+            for (let j = k + 1; j < n; j++) {
                 if (D[k][j]) {
                     done_in_row = false;
                 }
@@ -191,11 +191,11 @@ function smithify(A, num_cols) {
                 break;
             }
 
-            for (j = k + 1; j < n; j++) {
+            for (let j = k + 1; j < n; j++) {
                 improve_with_col_ops(k, j, k);
             }
             let done_in_col = true;
-            for (i = k + 1; i < m; i++) {
+            for (let i = k + 1; i < m; i++) {
                 if (D[i][k]) {
                     done_in_col = false;
                 }
@@ -211,9 +211,9 @@ function smithify(A, num_cols) {
     while (1) {
         // Bubble the most divisible numbers toward the end.
         let done = true;
-        for (k = 0; k < m - 1 && k < n - 1; k++) {
-            d1 = D[k][k];
-            d2 = D[k+1][k+1];
+        for (let k = 0; k < m - 1 && k < n - 1; k++) {
+            let d1 = D[k][k];
+            let d2 = D[k+1][k+1];
             if (d1 == 0) {
                 if (d2 == 0) {
                     continue;
@@ -255,9 +255,9 @@ function cokernel(A, num_cols) {
     check_rectangular(A, n);
 
     // A = UDV
-    smith_A = smithify(A, n);
-    U = smith_A.Sinv
-    D = smith_A.D
+    let smith_A = smithify(A, n);
+    let U = smith_A.Sinv;
+    let D = smith_A.D;
 
     // coker A = Z^m / im(UDV)
     //         = Z^m / im(UD)
@@ -272,15 +272,15 @@ function cokernel(A, num_cols) {
     // Apply Ubar to the standard basis.
 
     // Z/1Z is trivial, Z/0Z is free, and Z/kZ is torsion for k > 1.
-    trivialities = []
-    torsion_generators = []
-    free_generators = []
+    let trivialities = [];
+    let torsion_generators = [];
+    let free_generators = [];
 
-    for (j = 0; j < m; j++) {
+    for (let j = 0; j < m; j++) {
         let order = j < n ? D[j][j] : 0;
         order = order < 0 ? -order : order;
-        column = [];
-        for (i = 0; i < m; i++) {
+        let column = [];
+        for (let i = 0; i < m; i++) {
             column[i] = U[i][j];
         }
         if (order == 0) {
@@ -308,7 +308,7 @@ function kernel_basis(A, num_cols) {
     let T = smith_A.T
     // If D = SAT then {Ax=0} = {SAx=0} = T*{SATx=0} = T*{Dx=0}.
     let ker_D_indices = []
-    for (j = 0; j < n; j++) {
+    for (let j = 0; j < n; j++) {
         if (j >= m || D[j][j] == 0) {
             ker_D_indices.push(j);
         }
@@ -316,7 +316,7 @@ function kernel_basis(A, num_cols) {
     let columns = [];
     ker_D_indices.forEach((j) => {
         let col = [];
-        for (i = 0; i < n; i++) {
+        for (let i = 0; i < n; i++) {
             col.push(T[i][j]);
         }
         columns.push(col);
@@ -340,10 +340,10 @@ function homology(A, num_A_cols, B, num_B_cols) {
     }
 
     // Assert BA=0.
-    for (i1 = 0; i1 < k; i1++) {
-        for (i3 = 0; i3 < n; i3++) {
-            s = 0n;
-            for (i2 = 0; i2 < m; i2++) {
+    for (let i1 = 0; i1 < k; i1++) {
+        for (let i3 = 0; i3 < n; i3++) {
+            let s = 0n;
+            for (let i2 = 0; i2 < m; i2++) {
                 s += B[i1][i2] * A[i2][i3];
             }
             if (s != 0n) {
@@ -373,9 +373,9 @@ function homology(A, num_A_cols, B, num_B_cols) {
     let m_r = freegen.length;
     // transpose: freegen has m_r lists of m each
     // we want G to have m lists of m_r each
-    for (i = 0; i < m; i++) {
+    for (let i = 0; i < m; i++) {
         let row = [];
-        for (j = 0; j < m_r; j++) {
+        for (let j = 0; j < m_r; j++) {
             row[j] = freegen[j][i];
         }
         G.push(row);
@@ -392,13 +392,13 @@ function homology(A, num_A_cols, B, num_B_cols) {
     //   = [G({v in Z^(m-r) : BG(v) = 0})]
     //   = [G(ker(B o G))]
 
-    let BG = []
-    for (i = 0; i < k; i++) {
+    let BG = [];
+    for (let i = 0; i < k; i++) {
         BG[i] = [];
         let Bi = B[i];
-        for (j = 0; j < m_r; j++) {
+        for (let j = 0; j < m_r; j++) {
             let s = 0n;
-            for (q = 0; q < m; q++) {
+            for (let q = 0; q < m; q++) {
                 s += Bi[q] * G[q][j];
             }
             BG[i][j] = s;
@@ -406,13 +406,13 @@ function homology(A, num_A_cols, B, num_B_cols) {
     }
     let ker_BG = kernel_basis(BG, m_r);
     let free_generators = [];
-    for (_i = 0; _i < ker_BG.length; _i++) {
+    for (let _i = 0; _i < ker_BG.length; _i++) {
         free_generators[_i] = [];
         let gen = ker_BG[_i];
-        for (i = 0; i < m; i++) {
+        for (let i = 0; i < m; i++) {
             let s = 0n;
             let Gi = G[i];
-            for (q = 0; q < Gi.length; q++) {
+            for (let q = 0; q < Gi.length; q++) {
                 s += Gi[q] * gen[q];
             }
             free_generators[_i][i] = s;
@@ -444,7 +444,7 @@ function chain_complex_from_names(dimension_face_names, boundary) {
 
     // Make sure everything lines up
     dimension_face_names.forEach((name_list, dim) => {
-        for (index = 0; index < name_list.length; index++) {
+        for (let index = 0; index < name_list.length; index++) {
             let name = name_list[index];
             if (name_to_dimension.has(name)) {
                 throw new Error(`duplicate name "${name}"`);
@@ -453,7 +453,7 @@ function chain_complex_from_names(dimension_face_names, boundary) {
             name_to_index.set(name, index);
         }
     });
-    for (dim = min_dim; dim <= max_dim; dim++) {
+    for (let dim = min_dim; dim <= max_dim; dim++) {
         if (!dimension_to_size.has(dim)) {
             dimension_to_size.set(dim, 0);
         }
@@ -475,13 +475,13 @@ function chain_complex_from_names(dimension_face_names, boundary) {
     });
 
     // Make the matrices
-    for (dim = max_dim + 1; dim >= min_dim; dim--) {
+    for (let dim = max_dim + 1; dim >= min_dim; dim--) {
         let m = dimension_to_size.get(dim - 1);
         let n = dimension_to_size.get(dim);
         let M = [];
-        for (i = 0; i < m; i++) {
+        for (let i = 0; i < m; i++) {
             M[i] = [];
-            for (j = 0; j < n; j++) {
+            for (let j = 0; j < n; j++) {
                 M[i][j] = 0n;
             }
         }
@@ -526,7 +526,7 @@ function chain_complex_from_names(dimension_face_names, boundary) {
 function transpose(A, num_A_cols) {
     check_rectangular(A, num_A_cols);
     let result = [];
-    for (j = 0; j < num_A_cols; j++) {
+    for (let j = 0; j < num_A_cols; j++) {
         let new_row = [];
         A.forEach((old_row) => {
             new_row.push(old_row[j]);
@@ -540,8 +540,8 @@ function transpose(A, num_A_cols) {
 function homology_from_names(dimension_face_names, boundary, co) {
     let {min_dim, max_dim, matrices, dimension_to_size}
         = chain_complex_from_names(dimension_face_names, boundary);
-    result = [];
-    for (dim = min_dim; dim <= max_dim; dim++) {
+    let result = [];
+    for (let dim = min_dim; dim <= max_dim; dim++) {
         let A = matrices.get(dim + 1);
         let B = matrices.get(dim);
         let n = dimension_to_size.get(dim + 1);
@@ -556,7 +556,7 @@ function homology_from_names(dimension_face_names, boundary, co) {
         let name_list = dimension_face_names.get(dim);
         function to_names(gen) {
             let namegen = [];
-            for (i = 0; i < gen.length; i++) {
+            for (let i = 0; i < gen.length; i++) {
                 let coeff = gen[i];
                 if (coeff != 0n) {
                     namegen.push([coeff, name_list[i]]);

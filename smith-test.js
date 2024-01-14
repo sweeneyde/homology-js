@@ -22,7 +22,7 @@ function randrange(a, b) {
     return BigInt(a + Math.floor(Math.random() * (b - a)));
 }
 
-for (i = 0; i < 20; i++) {
+for (let i = 0; i < 20; i++) {
     let a = randrange(-1000, 1000);
     let b = randrange(-1000, 1000);
     let [x, y, g] = xgcd(a, b);
@@ -50,10 +50,10 @@ function matrix_multiply(A, A_num_cols, B, B_num_cols) {
     console.assert(A_num_cols == B.length);
     let result = [];
     A.forEach((row) => {result.push([])});
-    for (i = 0; i < A.length; i++) {
-        for (j = 0; j < B_num_cols; j++) {
+    for (let i = 0; i < A.length; i++) {
+        for (let j = 0; j < B_num_cols; j++) {
             let s = 0n;
-            for (k=0; k < A_num_cols; k++) {
+            for (let k=0; k < A_num_cols; k++) {
                 s += A[i][k]*B[k][j];
             }
             result[i][j] = s;
@@ -64,22 +64,22 @@ function matrix_multiply(A, A_num_cols, B, B_num_cols) {
 
 function assert_equal(a, b, num_cols, data) {
     console.assert(a.length == b.length, a, b);
-    for (i = 0; i < a.length; i++) {
+    for (let i = 0; i < a.length; i++) {
         console.assert(a[i].length == num_cols);
         console.assert(b[i].length == num_cols);
-        for (j = 0; j < num_cols; j++) {
+        for (let j = 0; j < num_cols; j++) {
             console.assert(a[i][j] == b[i][j], [a, b], data);
         }
     }
 }
 
-for (loop = 0; loop < 5; loop++) {
-    for (m = 0; m < 6; m++) {
-        for (n = 0; n < 6; n++) {
+for (let loop = 0; loop < 5; loop++) {
+    for (let m = 0; m < 6; m++) {
+        for (let n = 0; n < 6; n++) {
             let A = [];
-            for (i = 0; i < m; i++) {
+            for (let i = 0; i < m; i++) {
                 A[i] = [];
-                for (j = 0; j < n; j++) {
+                for (let j = 0; j < n; j++) {
                     A[i][j] = randrange(-5, 5);
                 }
             }
@@ -88,8 +88,8 @@ for (loop = 0; loop < 5; loop++) {
             let info = {A:A, result:result};
 
             // Assert the D is diagonal
-            for (i = 0; i < D.length; i++) {
-                for (j = 0; j < D[i].length; j++) {
+            for (let i = 0; i < D.length; i++) {
+                for (let j = 0; j < D[i].length; j++) {
                     if (i != j) {
                         console.assert(D[i][j] == 0n, info);
                     }
@@ -97,7 +97,7 @@ for (loop = 0; loop < 5; loop++) {
             }
 
             // Assert that D has the right divisibility
-            for (i = 1; i < m && i < n; i++) {
+            for (let i = 1; i < m && i < n; i++) {
                 let d1 = D[i-1][i-1];
                 let d2 = D[i][i];
                 if (d1 == 0) {
@@ -127,9 +127,9 @@ for (loop = 0; loop < 5; loop++) {
 
             // Assert that inverses are computed correctly
             let id_m = [];
-            for (i = 0; i < m; i++) {
+            for (let i = 0; i < m; i++) {
                 id_m[i] = [];
-                for (j = 0; j < m; j++) {
+                for (let j = 0; j < m; j++) {
                     id_m[i][j] = (i == j) ? 1n : 0n;
                 }
             }
@@ -139,9 +139,9 @@ for (loop = 0; loop < 5; loop++) {
             assert_equal(SSinv, id_m, m)
 
             let id_n = [];
-            for (i = 0; i < n; i++) {
+            for (let i = 0; i < n; i++) {
                 id_n[i] = [];
-                for (j = 0; j < n; j++) {
+                for (let j = 0; j < n; j++) {
                     id_n[i][j] = (i == j) ? 1n : 0n;
                 }
             }
