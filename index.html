@@ -42,7 +42,6 @@
             margin-right: 0;
             font-weight: bold;
         }
-
         details {
             background-color: #eeeeee;
             border: 1px solid black;
@@ -74,11 +73,6 @@
             width: 100%;
             white-space: pre;
         }
-        .img-center {
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
-        }
         .inline-div {
            display:inline-block;
            vertical-align: top;
@@ -88,28 +82,38 @@
 <body>
     <div style="max-width:960px;margin:auto">
         <h1>Homology Calculator</h1>
-        <p>
-            To use this calculator,
-            consider a shape (cell complex) and give a name
-            to each face (cell) of the shape.
-            For example, take this diagram of a Torus
-            from Allen Hatcher's text
-            <cite>Algebraic Topology</cite> (p. 102):
-            <img src="./hatcher_torus_cells.svg" width="200px" alt="Torus Cell Structure" class="img-center">
-            In the first input box below, list the faces
-            of each dimension. In the second input box,
-            specify the boundary of each face in terms
-            of the cells one dimension lower.
-            The output box will list the
-            (integral, cellular)
-            <a target="_blank" rel="noopener noreferrer" href="https://en.wikipedia.org/wiki/Homology_(mathematics)">homology</a>
-            or cohomology
-            of the resulting shape,
-            an algebraic structure representing
-            how the holes in each dimension fit together.
-            Click through the <cite>Example Inputs</cite> buttons
-            to see various possible example inputs.
-        </p>
+        <table>
+            <td>
+                <p>
+                    To use this calculator,
+                    consider a shape (cell complex) and give a name
+                    to each face (cell) of the shape.
+                    For example, use the diagram of the torus to the right.
+                </p>
+                <p>
+                    In the first input box below, list the faces
+                    of each dimension. In the second input box,
+                    specify the boundary of each face in terms
+                    of the cells one dimension lower.
+                    The output box will list the
+                    (integral, cellular)
+                    <a target="_blank" rel="noopener noreferrer" href="https://en.wikipedia.org/wiki/Homology_(mathematics)">homology</a>
+                    or cohomology
+                    of the resulting shape,
+                    algebraic structures representing
+                    how the holes in each dimension fit together.
+                </p>
+                <p>
+                    Click through the <cite>Example Inputs</cite> buttons
+                    to see various possible example inputs.
+                </p>
+            </td>
+            <td width="200px">
+                <img src="./hatcher_torus_cells.svg" width="150px" alt="Torus Cell Structure">
+                <br/>
+                <small>From <a target="_blank" rel="noopener noreferrer" href="https://pi.math.cornell.edu/~hatcher/AT/ATch2.pdf">Hatcher</a>, p.102</small>
+            </td>
+        </table>
         <details>
             <summary>Expand for more details</summary>
             <p>
