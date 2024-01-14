@@ -8,7 +8,7 @@
             src:
                 local("Segoe UI Symbol"),
                 local("Lucida Sans Unicode");
-            unicode-range: U+2124, U+2295, U+2245, U+2208, U+2212, U+2202;
+            unicode-range: U+2124, U+2295, U+2245, U+2208, U+2212, U+2202, U+002B, U+003D, U+2192;
         }
         body {
             font-family: math_symbol, Arial, sans-serif;
@@ -42,6 +42,26 @@
             margin-right: 0;
             font-weight: bold;
         }
+
+        details {
+            background-color: #eeeeee;
+            border: 1px solid black;
+            padding: 0.5em 0.5em 0;
+        }
+        summary {
+            background-color: #eeeeee;
+            font-weight: bold;
+            margin: -0.5em -0.5em 0;
+            padding: 0.5em;
+        }
+        details[open] {
+            padding: 0.5em;
+        }
+        details[open] summary {
+            border-bottom: 1px solid black;
+            margin-bottom: 0.5em;
+        }
+
         .input_textarea {
             resize: both;
             height: 150px;
@@ -74,7 +94,7 @@
             to each face (cell) of the shape.
             For example, take this diagram of a Torus
             from Allen Hatcher's text
-            <cite>Algebraic Topology (p. 102)</cite>:
+            <cite>Algebraic Topology</cite> (p. 102):
             <img src="./hatcher_torus_cells.svg" width="200px" alt="Torus Cell Structure" class="img-center">
             In the first input box below, list the faces
             of each dimension. In the second input box,
@@ -87,44 +107,53 @@
             of the resulting shape,
             an algebraic structure representing
             how the holes in each dimension fit together.
-        </p>
-        <p>
-            The "Cell Names by Dimension" box
-            should consist of a number of lines,
-            each line consisting of an
-            integer, followed by a colon,
-            followed by a comma-separated list of names
-            in that dimension.
-            Cell names can include ascii letters or digits or underscores, but cannot start with a digit.
-        </p>
-        <p>
-            Each line in the "Boundary" box
-            should consist of a cell name, followed by a colon,
-            followed by a chain of cells one dimension lower.
-            A chain consists of a list of cell names,
-            perhaps preceded by integer coefficients,
-            separated by <code>+</code>
-            and <code>-</code> signs.
-            Semicolons (<code>;</code>) are treated
-            the same as line breaks, so
-            multiple cell boundaries
-            can be specified in the same physical line.
-            Whitespace other than line breaks is generally ignored.
-        </p>
-        <p>
-            If the "cohomology" box is checked,
-            cohomology is computed instead of homology.
-            For the listed generators, a cell <var>a</var> is
-            identified with its dual cochain, so <var>a</var>(<var>a</var>)=1,
-            but <var>a</var>(<var>x</var>)=0 for any cell <var>x</var>
-            other than <var>a</var>.
-        </p>
-        <p>
-            Click through the "Example Inputs" buttons
+            Click through the <cite>Example Inputs</cite> buttons
             to see various possible example inputs.
         </p>
-
-
+        <details>
+            <summary>Expand for more details</summary>
+            <p>
+                The <cite>Cell Names by Dimension</cite> box below
+                should consist of a number of lines,
+                each line consisting of an
+                integer, followed by a colon,
+                followed by a comma-separated list of names
+                in that dimension.
+                Cell names can include ascii letters or digits or underscores, but cannot start with a digit.
+            </p>
+            <p>
+                Each line in the <cite>Boundary</cite> box below
+                should consist of a cell name, followed by a colon,
+                followed by a chain of cells one dimension lower.
+                A chain consists of a list of cell names,
+                perhaps preceded by integer coefficients,
+                separated by <code>+</code>
+                and <code>-</code> signs.
+                Semicolons (<code>;</code>) are treated
+                the same as line breaks, so
+                multiple cell boundaries
+                can be specified in the same physical line.
+                Whitespace other than line breaks is generally ignored.
+            </p>
+            <p>
+                The <cite>Homology Result</cite> box
+                will display not only the isomorphism type of the homology
+                in each dimension, but also specific chains
+                representing homology classes that generate
+                the direct summands of the Abelian group.
+                The result will be be computed from dimension 0 (or lower)
+                up to the dimension of the highest-dimensional cell.
+                All groups not listed are trivial.
+            </p>
+            <p>
+                If the <cite>cohomology</cite> checkbox is checked,
+                cohomology is computed instead of homology.
+                For the listed generators, a cell <var>a</var> is
+                identified with its dual cochain, so <var>a</var>(<var>a</var>)=1,
+                but <var>a</var>(<var>x</var>)=0 for any cell <var>x</var>
+                other than <var>a</var>.
+            </p>
+        </details>
         <div class="inline-div">
             <h2>Cell Names by Dimension</h2>
             <textarea class="input_textarea" id="cell_names" name="cell_names" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
@@ -170,93 +199,95 @@
         are based on SageMath's
         <code>sage.topology.simplicial_complex_examples</code>.</small>
         
-        <h1>How It Works</h1>
-        <p>
-            For an introduction to homology, see
-            <a target="_blank" rel="noopener noreferrer" href="https://pi.math.cornell.edu/~hatcher/AT/ATch2.pdf">Hatcher's free textbook</a>.
-            Homology is defined as "(kerel of boundary) modulo (image of boundary)",
-            often using the terminology "cycles modulo boundaries".
-            More explicitly, if we define <var>C<sub>i</sub></var>
-            to be chains (i.e. formal sums) of <var>i</var>-dimensional-cells,
-            and let ∂<sub><var>i</var></sub> : <var>C<sub>i</sub></var> → <var>C<sub>i-1</sub></var>
-            be the Abelian group homomorphism that maps a cell to its boundary,
-            then we define <var>H<sub>i</sub></var> to be the quotient
-            (ker ∂<sub><var>i</var></sub>) / (im ∂<sub><var>i+1</var></sub>)
-            of Abelian groups.
-        </p>
-        <h2>Example 1</h2>
-        <p>
-            Suppose that <var>x</var>, <var>y</var>, <var>z</var> are 1-cells
-            and each with boundary <var>p</var> − <var>q</var> and
-            that <var>F</var> is a 2-cell with boundary <var>2x − 2y</var>.
-            We'll compute <var>H<sub>1</sub>.
-        </p>
-        <p>
-            First, ker ∂<sub>1</sub> is
-            <ul style="list-style-type:none;">
-                <li>{ <var>ax</var> + <var>by</var> + <var>cz</var> : <var>a</var>, <var>b</var>, <var>c</var> ∈ ℤ with ∂<sub>1</sub>(<var>ax</var> + <var>by</var> + <var>cz</var>) = 0 }</li>
-                <li> = { <var>ax</var> + <var>by</var> + <var>cz</var> : <var>a</var>, <var>b</var>, <var>c</var> ∈ ℤ with <var>a</var>(<var>p</var> − <var>q</var>) + <var>b</var>(<var>p</var> − <var>q</var>) + <var>c</var>(<var>p</var> − <var>q</var>) = 0 }</li>
-                <li> = { <var>ax</var> + <var>by</var> + <var>cz</var> : <var>a</var>, <var>b</var>, <var>c</var> ∈ ℤ with <var>a</var> + <var>b</var> + <var>c</var> = 0 }</li>
-                <li> = { <var>ax</var> − (<var>a</var> + <var>c</var>)<var>y</var> + <var>cz</var> : <var>a</var>, <var>c</var> ∈ ℤ }</li>
-                <li> = { <var>a</var>(<var>x</var> − <var>y</var>) + <var>c</var>(<var>z</var> − <var>y</var>) : <var>a</var>, <var>c</var> ∈ ℤ }.</li>
-            </ul>
-            If we write <var>u</var> = <var>x</var> − <var>y</var> and <var>v</var> = <var>z</var> − <var>y</var>
-            then ker ∂<sub>1</sub> = 〈 <var>u</var>, <var>v</var> 〉
-            is the free Abelian group generated by <var>u</var> and <var>v</var>.
-        </p>
-        <p>
-            But since im ∂<sub>2</sub> is generated by 2<var>x</var> − 2<var>y</var> = 2<var>u</var>,
-            this shows that <var>H<sub>1</sub></var> = (ker ∂<sub>1</sub>) / (im ∂<sub>2</sub>) has
-            the Abelian group presentation 〈 <var>u</var>, <var>v</var> | 2<var>u</var> = 0 〉,
-            so <nobr><var>H</var><sub>1</sub> ≅ ℤ/2ℤ ⊕ ℤ</nobr>.
+        <details style="margin-top:1.5cm">
+            <summary>How It Works</summary>
+            <p>
+                For an introduction to homology, see
+                <a target="_blank" rel="noopener noreferrer" href="https://pi.math.cornell.edu/~hatcher/AT/ATch2.pdf">Hatcher's free textbook</a>.
+                Homology is defined as "(kerel of boundary) modulo (image of boundary)",
+                often using the terminology "cycles modulo boundaries".
+                More explicitly, if we define <var>C<sub>i</sub></var>
+                to be chains (i.e. formal sums) of <var>i</var>-dimensional-cells,
+                and let ∂<sub><var>i</var></sub> : <var>C<sub>i</sub></var> → <var>C<sub>i−1</sub></var>
+                be the Abelian group homomorphism that maps a cell to its boundary,
+                then we define <var>H<sub>i</sub></var> to be the quotient
+                (ker ∂<sub><var>i</var></sub>) / (im ∂<sub><var>i+1</var></sub>)
+                of Abelian groups.
+            </p>
+            <h2>Example 1</h2>
+            <p>
+                Suppose that <var>x</var>, <var>y</var>, <var>z</var> are 1-cells
+                and each with boundary <var>p</var> − <var>q</var> and
+                that <var>F</var> is a 2-cell with boundary <var>2x − 2y</var>.
+                We'll compute <var>H<sub>1</sub>.
+            </p>
+            <p>
+                First, ker ∂<sub>1</sub> is
+                <ul style="list-style-type:none;">
+                    <li>{ <var>ax</var> + <var>by</var> + <var>cz</var> : <var>a</var>, <var>b</var>, <var>c</var> ∈ ℤ with ∂<sub>1</sub>(<var>ax</var> + <var>by</var> + <var>cz</var>) = 0 }</li>
+                    <li> = { <var>ax</var> + <var>by</var> + <var>cz</var> : <var>a</var>, <var>b</var>, <var>c</var> ∈ ℤ with <var>a</var>(<var>p</var> − <var>q</var>) + <var>b</var>(<var>p</var> − <var>q</var>) + <var>c</var>(<var>p</var> − <var>q</var>) = 0 }</li>
+                    <li> = { <var>ax</var> + <var>by</var> + <var>cz</var> : <var>a</var>, <var>b</var>, <var>c</var> ∈ ℤ with <var>a</var> + <var>b</var> + <var>c</var> = 0 }</li>
+                    <li> = { <var>ax</var> − (<var>a</var> + <var>c</var>)<var>y</var> + <var>cz</var> : <var>a</var>, <var>c</var> ∈ ℤ }</li>
+                    <li> = { <var>a</var>(<var>x</var> − <var>y</var>) + <var>c</var>(<var>z</var> − <var>y</var>) : <var>a</var>, <var>c</var> ∈ ℤ }.</li>
+                </ul>
+                If we write <var>u</var> = <var>x</var> − <var>y</var> and <var>v</var> = <var>z</var> − <var>y</var>
+                then ker ∂<sub>1</sub> = 〈 <var>u</var>, <var>v</var> 〉
+                is the free Abelian group generated by <var>u</var> and <var>v</var>.
+            </p>
+            <p>
+                But since im ∂<sub>2</sub> is generated by 2<var>x</var> − 2<var>y</var> = 2<var>u</var>,
+                this shows that <var>H<sub>1</sub></var> = (ker ∂<sub>1</sub>) / (im ∂<sub>2</sub>) has
+                the Abelian group presentation <nobr>〈 <var>u</var>, <var>v</var> | 2<var>u</var> = 0 〉</nobr>,
+                so <nobr><var>H</var><sub>1</sub> ≅ ℤ/2ℤ ⊕ ℤ</nobr>.
 
-            Click <button onclick="do_example('example_1')">here</button>
-            to compute Example 1.
-        </p>
-        <h2>Example 2</h2>
-        <p>
-            It's always true that ker ∂<sub><var>i</var></sub>
-            is a free Abelian group because it's a subgroup
-            of the free Abelian group <var>C<sub>i</sub></var>.
-            This lines up with what we saw in Example 1.
-            So beyond translating into new variables like in Example 1,
-            the heart of the calculator must manipulate
-            Abelian group presentations
-            with several potentially complicated relations
-            to get to a normalized form.
-            We can do this with the Abelian group version
-            of <a target="_blank" rel="noopener noreferrer" href="https://en.wikipedia.org/wiki/Tietze_transformations">Tietze tranformations</a>.
-            Here's an example:
-            <ul>
-                <li>Start with 〈 <var>a</var>, <var>b</var> | 36<var>b</var> = 28<var>a</var> 〉</li>
-                <li>Add a new variable to get〈 <var>a</var>, <var>b</var>, <var>c</var> | 36<var>b</var> = 28<var>a</var>, <var>c</var> = <var>a</var> − <var>b</var> 〉</li>
-                <li>Simplify to 〈 <var>a</var>, <var>b</var>, <var>c</var> | 36<var>b</var> = 28(<var>b</var> + <var>c</var>), <var>a</var> = <var>b</var> + <var>c</var> 〉</li>
-                <li>Simplify to 〈 <var>a</var>, <var>b</var>, <var>c</var> | 8<var>b</var> = 28<var>c</var>, <var>a</var> = <var>b</var> + <var>c</var> 〉</li>
-                <li>Eliminate a variable to get 〈 <var>b</var>, <var>c</var> | 8<var>b</var> = 28<var>c</var> 〉</li>
-                <li>Add a new variable to get 〈 <var>b</var>, <var>c</var>, <var>d</var> | 8<var>b</var> = 28<var>c</var>, <var>d</var> = <var>b</var> − 3<var>c</var> 〉</li>
-                <li>Simplify to 〈 <var>b</var>, <var>c</var>, <var>d</var> | 8(<var>d</var> + 3<var>c</var>) = 28<var>c</var>, <var>b</var> = <var>d</var> + 3<var>c</var> 〉</li>
-                <li>Simplify to 〈 <var>b</var>, <var>c</var>, <var>d</var> | 8<var>d</var> = 4<var>c</var>, <var>b</var> = <var>d</var> + 3<var>c</var> 〉</li>
-                <li>Eliminate a variable to get 〈 <var>c</var>, <var>d</var> | 8<var>d</var> = 4<var>c</var> 〉</li>
-                <li>Add a new variable to get 〈 <var>c</var>, <var>d</var>, <var>e</var> | 8<var>d</var> = 4<var>c</var>, <var>e</var> = <var>c</var> − 2<var>d</var> 〉</li>
-                <li>Simplify to get 〈 <var>c</var>, <var>d</var>, <var>e</var> | 8<var>d</var> = 4(<var>e</var> + 2<var>d</var>), c = <var>e</var> + 2<var>d</var> 〉</li>
-                <li>Simplify to get 〈 <var>c</var>, <var>d</var>, <var>e</var> | 0 = 4<var>e</var>, <var>c</var> = <var>e</var> + 2<var>d</var> 〉</li>
-                <li>Eliminate a variable to get 〈 <var>d</var>, <var>e</var> | 0 = 4<var>e</var> 〉</li>
-                <li>Conclude that the group is ℤ ⊕ ℤ/4ℤ.</li>
-            </ul>
-            The above sort of Euclidean algorithm
-            can be done systematically
-            for many variables and relations simultaneously
-            by working with matrices and using
-            row and column operations to compute
-            the <a target="_blank" rel="noopener noreferrer" href="https://en.wikipedia.org/wiki/Smith_normal_form">Smith Normal Form</a> of the matrices.
-            See the source code <a target="_blank" rel="noopener noreferrer" href="https://github.com/sweeneyde/homology-js/blob/main/smith.js">here</a>.
-        </p>
-        <p>
-            Click <button onclick="do_example('tietze_result')">here</button>
-            to compute the equivalent of Example 2.
-            Generalizing from this example,
-            you could treat this page as an <em>Abelian group simplifier</em>!
-        </p>
+                Click <button onclick="do_example('example_1')">here</button>
+                to compute Example 1.
+            </p>
+            <h2>Example 2</h2>
+            <p>
+                It's always true that ker ∂<sub><var>i</var></sub>
+                is a free Abelian group because it's a subgroup
+                of the free Abelian group <var>C<sub>i</sub></var>.
+                This lines up with what we saw in Example 1.
+                So beyond translating into new variables like in Example 1,
+                the heart of the calculator must manipulate
+                Abelian group presentations
+                with several potentially complicated relations
+                to get to a normalized form.
+                We can do this with the Abelian group version
+                of <a target="_blank" rel="noopener noreferrer" href="https://en.wikipedia.org/wiki/Tietze_transformations">Tietze tranformations</a>.
+                Here's an example:
+                <ul>
+                    <li>Start with 〈 <var>a</var>, <var>b</var> | 36<var>b</var> = 28<var>a</var> 〉</li>
+                    <li>Add a new variable to get〈 <var>a</var>, <var>b</var>, <var>c</var> | 36<var>b</var> = 28<var>a</var>, <var>c</var> = <var>a</var> − <var>b</var> 〉</li>
+                    <li>Simplify to 〈 <var>a</var>, <var>b</var>, <var>c</var> | 36<var>b</var> = 28(<var>b</var> + <var>c</var>), <var>a</var> = <var>b</var> + <var>c</var> 〉</li>
+                    <li>Simplify to 〈 <var>a</var>, <var>b</var>, <var>c</var> | 8<var>b</var> = 28<var>c</var>, <var>a</var> = <var>b</var> + <var>c</var> 〉</li>
+                    <li>Eliminate a variable to get 〈 <var>b</var>, <var>c</var> | 8<var>b</var> = 28<var>c</var> 〉</li>
+                    <li>Add a new variable to get 〈 <var>b</var>, <var>c</var>, <var>d</var> | 8<var>b</var> = 28<var>c</var>, <var>d</var> = <var>b</var> − 3<var>c</var> 〉</li>
+                    <li>Simplify to 〈 <var>b</var>, <var>c</var>, <var>d</var> | 8(<var>d</var> + 3<var>c</var>) = 28<var>c</var>, <var>b</var> = <var>d</var> + 3<var>c</var> 〉</li>
+                    <li>Simplify to 〈 <var>b</var>, <var>c</var>, <var>d</var> | 8<var>d</var> = 4<var>c</var>, <var>b</var> = <var>d</var> + 3<var>c</var> 〉</li>
+                    <li>Eliminate a variable to get 〈 <var>c</var>, <var>d</var> | 8<var>d</var> = 4<var>c</var> 〉</li>
+                    <li>Add a new variable to get 〈 <var>c</var>, <var>d</var>, <var>e</var> | 8<var>d</var> = 4<var>c</var>, <var>e</var> = <var>c</var> − 2<var>d</var> 〉</li>
+                    <li>Simplify to get 〈 <var>c</var>, <var>d</var>, <var>e</var> | 8<var>d</var> = 4(<var>e</var> + 2<var>d</var>), c = <var>e</var> + 2<var>d</var> 〉</li>
+                    <li>Simplify to get 〈 <var>c</var>, <var>d</var>, <var>e</var> | 0 = 4<var>e</var>, <var>c</var> = <var>e</var> + 2<var>d</var> 〉</li>
+                    <li>Eliminate a variable to get 〈 <var>d</var>, <var>e</var> | 0 = 4<var>e</var> 〉</li>
+                    <li>Conclude that the group is ℤ ⊕ ℤ/4ℤ.</li>
+                </ul>
+                The above sort of Euclidean algorithm
+                can be done systematically
+                for many variables and relations simultaneously
+                by working with matrices and using
+                row and column operations to compute
+                the <a target="_blank" rel="noopener noreferrer" href="https://en.wikipedia.org/wiki/Smith_normal_form">Smith Normal Form</a> of the matrices.
+                See the source code <a target="_blank" rel="noopener noreferrer" href="https://github.com/sweeneyde/homology-js/blob/main/smith.js">here</a>.
+            </p>
+            <p>
+                Click <button onclick="do_example('tietze_result')">here</button>
+                to compute the equivalent of Example 2.
+                Generalizing from this example,
+                you could treat this page as an <em>Abelian group simplifier</em>!
+            </p>
+        </details>
     </div>
     <script type="text/javascript" src="./smith.js"></script>
     <script type="text/javascript" src="./examples.js"></script>
