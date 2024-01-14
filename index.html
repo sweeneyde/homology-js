@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="utf-8">
     <title>Homology Calculator</title>
     <link rel="shortcut icon" type="image/ico" href="favicon.ico">
     <style>
@@ -43,6 +44,11 @@
             margin-right: 0;
             font-weight: bold;
         }
+        img {
+            padding-left: 0.5cm;
+            padding-right: 0.5cm;
+        }
+
         details {
             margin-top: 1cm;
             background-color: #eeeeee;
@@ -97,21 +103,24 @@
            display:inline-block;
            vertical-align: top;
         }
+
+        .nobr  {  white-space: nowrap;  hyphens: none;  }
     </style>
 </head>
 <body>
     <div style="max-width:960px;margin:auto">
         <h1><a class="title" target="_blank" rel="noopener noreferrer" href="https://github.com/sweeneyde/homology-js/">Homology Calculator</a></h1>
         <table>
+            <tr>
             <td>
                 <p>
                     To use this calculator,
                     consider a shape (cell complex) and give a name
                     to each face (cell) of the shape.
                     For example, the diagram to the right represents a torus
-                    constructed with <nobr>one 0-cell (named <var>v</var>)</nobr>,
-                    <nobr>three 1-cells (named <var>a</var>, <var>b</var>, and <var>c</var>)</nobr>,
-                    and <nobr>two 2-cells (named <var>U</var> and <var>L</var>)</nobr>.
+                    constructed with <span class="nobr">one 0-cell (named <var>v</var>)</span>,
+                    <span class="nobr">three 1-cells (named <var>a</var>, <var>b</var>, and <var>c</var>)</span>,
+                    and <span class="nobr">two 2-cells (named <var>U</var> and <var>L</var>)</span>.
                 </p>
                 <p>
                     In the first input box below, list the cells
@@ -131,26 +140,27 @@
                     <cite>Example Inputs</cite> for a demo.
                 </p>
             </td>
-            <td width="200px">
-                <img src="./hatcher_torus_cells.svg" width="150px" alt="Torus Cell Structure">
+            <td>
+                <img src="./hatcher_torus_cells.svg" width="150" alt="Torus Cell Structure">
                 <br/>
                 <small>From <a target="_blank" rel="noopener noreferrer" href="https://pi.math.cornell.edu/~hatcher/AT/ATch2.pdf">Hatcher</a>, p.102</small>
             </td>
+        </tr>
         </table>
         <div class="inline-div">
             <h2>Cell Names by Dimension</h2>
-            <textarea class="input_textarea" id="cell_names" name="cell_names" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
+            <textarea class="input_textarea" id="cell_names" name="cell_names" spellcheck="false"></textarea>
         </div>
         <div class="inline-div">
             <h2>Boundary</h2>
-            <textarea class="input_textarea" id="boundary" name="boundary" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
+            <textarea class="input_textarea" id="boundary" name="boundary" spellcheck="false"></textarea>
         </div>
 
         <h2>Homology Result</h2>
         <button onclick="update()">Compute</button>
-        <input type="checkbox" id="auto_check" name="auto_check" value="Auto Update" autocomplete="off" checked>
+        <input type="checkbox" id="auto_check" name="auto_check" value="Auto Update" checked>
         <label for="auto_check">Compute automatically as I type</label>
-        <input type="checkbox" id="co_check" name="co_check" value="Cohomology" autocomplete="off">
+        <input type="checkbox" id="co_check" name="co_check" value="Cohomology">
         <label for="co_check">Cohomology</label>
         <br/>
         <textarea id="output_textarea" name="output_textarea" class="output_textarea" readonly></textarea>
@@ -247,17 +257,19 @@
                 Suppose that <var>x</var>, <var>y</var>, <var>z</var> are 1-cells
                 and each with boundary <var>p</var> − <var>q</var> and
                 that <var>F</var> is a 2-cell with boundary <var>2x − 2y</var>.
-                We'll compute <var>H<sub>1</sub>.
+                We'll compute <var>H</var><sub>1</sub>.
             </p>
             <p>
                 First, ker ∂<sub>1</sub> is
-                <ul style="list-style-type:none;">
-                    <li>{ <var>ax</var> + <var>by</var> + <var>cz</var> : <var>a</var>, <var>b</var>, <var>c</var> ∈ ℤ with ∂<sub>1</sub>(<var>ax</var> + <var>by</var> + <var>cz</var>) = 0 }</li>
-                    <li> = { <var>ax</var> + <var>by</var> + <var>cz</var> : <var>a</var>, <var>b</var>, <var>c</var> ∈ ℤ with <var>a</var>(<var>p</var> − <var>q</var>) + <var>b</var>(<var>p</var> − <var>q</var>) + <var>c</var>(<var>p</var> − <var>q</var>) = 0 }</li>
-                    <li> = { <var>ax</var> + <var>by</var> + <var>cz</var> : <var>a</var>, <var>b</var>, <var>c</var> ∈ ℤ with <var>a</var> + <var>b</var> + <var>c</var> = 0 }</li>
-                    <li> = { <var>ax</var> − (<var>a</var> + <var>c</var>)<var>y</var> + <var>cz</var> : <var>a</var>, <var>c</var> ∈ ℤ }</li>
-                    <li> = { <var>a</var>(<var>x</var> − <var>y</var>) + <var>c</var>(<var>z</var> − <var>y</var>) : <var>a</var>, <var>c</var> ∈ ℤ }.</li>
-                </ul>
+            </p>
+            <ul style="list-style-type:none;">
+                <li>{ <var>ax</var> + <var>by</var> + <var>cz</var> : <var>a</var>, <var>b</var>, <var>c</var> ∈ ℤ with ∂<sub>1</sub>(<var>ax</var> + <var>by</var> + <var>cz</var>) = 0 }</li>
+                <li> = { <var>ax</var> + <var>by</var> + <var>cz</var> : <var>a</var>, <var>b</var>, <var>c</var> ∈ ℤ with <var>a</var>(<var>p</var> − <var>q</var>) + <var>b</var>(<var>p</var> − <var>q</var>) + <var>c</var>(<var>p</var> − <var>q</var>) = 0 }</li>
+                <li> = { <var>ax</var> + <var>by</var> + <var>cz</var> : <var>a</var>, <var>b</var>, <var>c</var> ∈ ℤ with <var>a</var> + <var>b</var> + <var>c</var> = 0 }</li>
+                <li> = { <var>ax</var> − (<var>a</var> + <var>c</var>)<var>y</var> + <var>cz</var> : <var>a</var>, <var>c</var> ∈ ℤ }</li>
+                <li> = { <var>a</var>(<var>x</var> − <var>y</var>) + <var>c</var>(<var>z</var> − <var>y</var>) : <var>a</var>, <var>c</var> ∈ ℤ }.</li>
+            </ul>
+            <p>
                 If we write <var>u</var> = <var>x</var> − <var>y</var> and <var>v</var> = <var>z</var> − <var>y</var>
                 then ker ∂<sub>1</sub> = 〈 <var>u</var>, <var>v</var> 〉
                 is the free Abelian group generated by <var>u</var> and <var>v</var>.
@@ -265,8 +277,8 @@
             <p>
                 But since im ∂<sub>2</sub> is generated by 2<var>x</var> − 2<var>y</var> = 2<var>u</var>,
                 this shows that <var>H<sub>1</sub></var> = (ker ∂<sub>1</sub>) / (im ∂<sub>2</sub>) has
-                the Abelian group presentation <nobr>〈 <var>u</var>, <var>v</var> | 2<var>u</var> = 0 〉</nobr>,
-                so <nobr><var>H</var><sub>1</sub> ≅ ℤ/2ℤ ⊕ ℤ</nobr>.
+                the Abelian group presentation <span class="nobr">〈 <var>u</var>, <var>v</var> | 2<var>u</var> = 0 〉</span>,
+                so <span class="nobr"><var>H</var><sub>1</sub> ≅ ℤ/2ℤ ⊕ ℤ</span>.
 
                 Click <button onclick="do_example('example_1')">here</button>
                 to compute Example 1.
@@ -284,23 +296,27 @@
                 to get to a normalized form.
                 We can do this with the Abelian group version
                 of <a target="_blank" rel="noopener noreferrer" href="https://en.wikipedia.org/wiki/Tietze_transformations">Tietze tranformations</a>.
+            </p>
+            <p>
                 Here's an example:
-                <ul>
-                    <li>Start with 〈 <var>a</var>, <var>b</var> | 36<var>b</var> = 28<var>a</var> 〉</li>
-                    <li>Add a new variable to get〈 <var>a</var>, <var>b</var>, <var>c</var> | 36<var>b</var> = 28<var>a</var>, <var>c</var> = <var>a</var> − <var>b</var> 〉</li>
-                    <li>Simplify to 〈 <var>a</var>, <var>b</var>, <var>c</var> | 36<var>b</var> = 28(<var>b</var> + <var>c</var>), <var>a</var> = <var>b</var> + <var>c</var> 〉</li>
-                    <li>Simplify to 〈 <var>a</var>, <var>b</var>, <var>c</var> | 8<var>b</var> = 28<var>c</var>, <var>a</var> = <var>b</var> + <var>c</var> 〉</li>
-                    <li>Eliminate a variable to get 〈 <var>b</var>, <var>c</var> | 8<var>b</var> = 28<var>c</var> 〉</li>
-                    <li>Add a new variable to get 〈 <var>b</var>, <var>c</var>, <var>d</var> | 8<var>b</var> = 28<var>c</var>, <var>d</var> = <var>b</var> − 3<var>c</var> 〉</li>
-                    <li>Simplify to 〈 <var>b</var>, <var>c</var>, <var>d</var> | 8(<var>d</var> + 3<var>c</var>) = 28<var>c</var>, <var>b</var> = <var>d</var> + 3<var>c</var> 〉</li>
-                    <li>Simplify to 〈 <var>b</var>, <var>c</var>, <var>d</var> | 8<var>d</var> = 4<var>c</var>, <var>b</var> = <var>d</var> + 3<var>c</var> 〉</li>
-                    <li>Eliminate a variable to get 〈 <var>c</var>, <var>d</var> | 8<var>d</var> = 4<var>c</var> 〉</li>
-                    <li>Add a new variable to get 〈 <var>c</var>, <var>d</var>, <var>e</var> | 8<var>d</var> = 4<var>c</var>, <var>e</var> = <var>c</var> − 2<var>d</var> 〉</li>
-                    <li>Simplify to get 〈 <var>c</var>, <var>d</var>, <var>e</var> | 8<var>d</var> = 4(<var>e</var> + 2<var>d</var>), c = <var>e</var> + 2<var>d</var> 〉</li>
-                    <li>Simplify to get 〈 <var>c</var>, <var>d</var>, <var>e</var> | 0 = 4<var>e</var>, <var>c</var> = <var>e</var> + 2<var>d</var> 〉</li>
-                    <li>Eliminate a variable to get 〈 <var>d</var>, <var>e</var> | 0 = 4<var>e</var> 〉</li>
-                    <li>Conclude that the group is ℤ ⊕ ℤ/4ℤ.</li>
-                </ul>
+            </p>
+            <ul>
+                <li>Start with 〈 <var>a</var>, <var>b</var> | 36<var>b</var> = 28<var>a</var> 〉</li>
+                <li>Add a new variable to get〈 <var>a</var>, <var>b</var>, <var>c</var> | 36<var>b</var> = 28<var>a</var>, <var>c</var> = <var>a</var> − <var>b</var> 〉</li>
+                <li>Simplify to 〈 <var>a</var>, <var>b</var>, <var>c</var> | 36<var>b</var> = 28(<var>b</var> + <var>c</var>), <var>a</var> = <var>b</var> + <var>c</var> 〉</li>
+                <li>Simplify to 〈 <var>a</var>, <var>b</var>, <var>c</var> | 8<var>b</var> = 28<var>c</var>, <var>a</var> = <var>b</var> + <var>c</var> 〉</li>
+                <li>Eliminate a variable to get 〈 <var>b</var>, <var>c</var> | 8<var>b</var> = 28<var>c</var> 〉</li>
+                <li>Add a new variable to get 〈 <var>b</var>, <var>c</var>, <var>d</var> | 8<var>b</var> = 28<var>c</var>, <var>d</var> = <var>b</var> − 3<var>c</var> 〉</li>
+                <li>Simplify to 〈 <var>b</var>, <var>c</var>, <var>d</var> | 8(<var>d</var> + 3<var>c</var>) = 28<var>c</var>, <var>b</var> = <var>d</var> + 3<var>c</var> 〉</li>
+                <li>Simplify to 〈 <var>b</var>, <var>c</var>, <var>d</var> | 8<var>d</var> = 4<var>c</var>, <var>b</var> = <var>d</var> + 3<var>c</var> 〉</li>
+                <li>Eliminate a variable to get 〈 <var>c</var>, <var>d</var> | 8<var>d</var> = 4<var>c</var> 〉</li>
+                <li>Add a new variable to get 〈 <var>c</var>, <var>d</var>, <var>e</var> | 8<var>d</var> = 4<var>c</var>, <var>e</var> = <var>c</var> − 2<var>d</var> 〉</li>
+                <li>Simplify to get 〈 <var>c</var>, <var>d</var>, <var>e</var> | 8<var>d</var> = 4(<var>e</var> + 2<var>d</var>), c = <var>e</var> + 2<var>d</var> 〉</li>
+                <li>Simplify to get 〈 <var>c</var>, <var>d</var>, <var>e</var> | 0 = 4<var>e</var>, <var>c</var> = <var>e</var> + 2<var>d</var> 〉</li>
+                <li>Eliminate a variable to get 〈 <var>d</var>, <var>e</var> | 0 = 4<var>e</var> 〉</li>
+                <li>Conclude that the group is ℤ ⊕ ℤ/4ℤ.</li>
+            </ul>
+            <p>
                 The above sort of Euclidean algorithm
                 can be done systematically
                 for many variables and relations simultaneously
