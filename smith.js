@@ -176,7 +176,7 @@ function smithify(A, num_cols) {
 
     // ===== Phase 1: diagonalize =====
     for (let k = 0; k < m && k < n; k++) {
-        while (1) {
+        for (;;) {
             for (let i = k + 1; i < m; i++) {
                 improve_with_row_ops(k, i, k);
             }
@@ -208,7 +208,7 @@ function smithify(A, num_cols) {
     }
 
     // ===== Phase 2: fix the divisibility =====
-    while (1) {
+    for (;;) {
         // Bubble the most divisible numbers toward the end.
         let done = true;
         for (let k = 0; k < m - 1 && k < n - 1; k++) {
@@ -463,11 +463,11 @@ function chain_complex_from_names(dimension_face_names, boundary) {
             throw new Error(`Unknown face "${F}"`);
         }
         let dim_F = name_to_dimension.get(F);
-        dF.forEach(([coeff, face]) => {
+        dF.forEach(([, face]) => {
             if (!name_to_dimension.has(face)) {
                 throw new Error(`Unknown face "${face}"`);
             }
-            dim_face = name_to_dimension.get(face);
+            let dim_face = name_to_dimension.get(face);
             if (name_to_dimension.get(face) != dim_F - 1) {
                 throw new Error(`Boundary of ${dim_F}-dimensional ${F} includes ${dim_face}-dimensional ${face}`);
             }
@@ -498,7 +498,7 @@ function chain_complex_from_names(dimension_face_names, boundary) {
     // Assert chain complex
     boundary.forEach((dF, F) => {
         let dim = name_to_dimension.get(F);
-        ddF = new Map();
+        let ddF = new Map();
         if (!dimension_face_names.has(dim-2)) {
             return;
         }
@@ -538,6 +538,16 @@ function transpose(A, num_A_cols) {
 }
 
 function homology_from_names(dimension_face_names, boundary, co) {
+    function to_names(name_list, gen) {
+        let namegen = [];
+        for (let i = 0; i < gen.length; i++) {
+            let coeff = gen[i];
+            if (coeff != 0n) {
+                namegen.push([coeff, name_list[i]]);
+            }
+        }
+        return namegen;
+    }
     let {min_dim, max_dim, matrices, dimension_to_size}
         = chain_complex_from_names(dimension_face_names, boundary);
     let result = [];
@@ -554,19 +564,11 @@ function homology_from_names(dimension_face_names, boundary, co) {
             H = homology(A, n, B, m);
         }
         let name_list = dimension_face_names.get(dim);
-        function to_names(gen) {
-            let namegen = [];
-            for (let i = 0; i < gen.length; i++) {
-                let coeff = gen[i];
-                if (coeff != 0n) {
-                    namegen.push([coeff, name_list[i]]);
-                }
-            }
-            return namegen;
-        }
-        let free_generators = H.free_generators.map(to_names);
+        let free_generators = H.free_generators.map(
+            (gen) => to_names(name_list, gen)
+        );
         let torsion_generators = H.torsion_generators.map(
-            ([gen, order]) => [to_names(gen), order]
+            ([gen, order]) => [to_names(name_list, gen), order]
         );
         result.push([dim, {free_generators: free_generators,
                            torsion_generators:torsion_generators}]);
