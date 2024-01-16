@@ -104,6 +104,19 @@
            vertical-align: top;
         }
 
+        .controls {
+            margin: 0px 0px 0px 0px;
+        }
+        .controls button {
+            margin: 0px 20px 0px 0px;
+        }
+        .controls input {
+            margin: 0px 0px 0px 0px;
+        }
+        .controls label {
+            margin: 0px 20px 0px 0px;
+        }
+
         .nobr  {  white-space: nowrap;  hyphens: none;  }
     </style>
 </head>
@@ -157,13 +170,21 @@
         </div>
 
         <label for="output_textarea"><h2>Homology Result</h2></label>
-        <button onclick="update()">Compute</button>
-        <input type="checkbox" id="auto_check" name="auto_check" value="Auto Update" checked>
-        <label for="auto_check">Compute automatically as I type</label>
-        <input type="checkbox" id="co_check" name="co_check" value="Cohomology">
-        <label for="co_check">Cohomology</label>
-        <br/>
         <textarea id="output_textarea" name="output_textarea" class="output_textarea" readonly></textarea>
+        <div class="controls">
+            <button onclick="update()">Compute</button>
+            <span class="nobr">
+                <input type="checkbox" id="auto_check" name="auto_check" value="Auto Update" checked>
+                <label for="auto_check">Compute automatically as I type</label>
+            </span>
+            <span class="nobr">
+                <input type="checkbox" id="co_check" name="co_check" value="Cohomology">
+                <label for="co_check">Cohomology</label>
+            </span>
+            <span class="nobr">
+                <a href="javascript:void(0);" id="permalink_link">Direct link to this computation</a>
+            </span>
+        </div>
 
         <h2>Example Inputs</h2>
         <button onclick="do_example('hollow tetrahedron')">Hollow Tetrahedron</button>

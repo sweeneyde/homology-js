@@ -159,14 +159,22 @@ let boundary_textarea = document.getElementById("boundary");
 let output_textarea = document.getElementById("output_textarea");
 let auto_check = document.getElementById("auto_check");
 let co_check = document.getElementById("co_check");
+let permalink_link = document.getElementById("permalink_link");
 
 function update() {
+    // Update result
     output_textarea.value = "...";
     let result_string = get_homology_result_string(
         cell_names_textarea.value,
         boundary_textarea.value,
         co_check.checked);
     output_textarea.value = result_string;
+
+    // Update permalink
+    let new_url = new URL(myUrl.href);
+    new_url.searchParams.set("cells", cell_names_textarea.value);
+    new_url.searchParams.set("boundary", boundary_textarea.value);
+    permalink_link.setAttribute("href", new_url);
 }
 
 function keystroke() {
@@ -175,6 +183,7 @@ function keystroke() {
     }
     else {
         output_textarea.value = "";
+        permalink_link.setAttribute("href", "javascript:void(0);");
     }
 }
 // https://stackoverflow.com/a/14029861/11461120
@@ -194,4 +203,14 @@ function do_example(ex_name) {
     update();
 }
 
-do_example("torus_delta");
+
+const myUrl = new URL(window.location.toLocaleString());
+const UrlParams = myUrl.searchParams;
+if (UrlParams.has("cells") && UrlParams.has("boundary")) {
+    cell_names_textarea.value = UrlParams.get("cells");
+    boundary_textarea.value = UrlParams.get("boundary");
+    update();
+}
+else {
+    do_example("torus_delta");
+}
