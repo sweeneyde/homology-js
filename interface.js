@@ -100,9 +100,9 @@ function parse_boundary(text) {
             if (digits == -1) {
                 throw new Error(`Integer ${chunk} is not a cell`);
             }
-            let coeff = sign;
+            let coeff = BigInt(sign);
             if (digits > 0) {
-                coeff *= parseInt(chunk.slice(1 + spaces, 1 + spaces + digits));
+                coeff *= BigInt(chunk.slice(1 + spaces, 1 + spaces + digits));
             }
             let boundary_name = chunk.slice(1 + spaces + digits).trim();
             if (!face_name_regex.test(boundary_name)) {
@@ -204,7 +204,7 @@ function do_example(ex_name) {
 }
 
 
-const myUrl = new URL(window.location.toLocaleString());
+const myUrl = new URL(window.location.href);
 const UrlParams = myUrl.searchParams;
 if (UrlParams.has("cells") && UrlParams.has("boundary")) {
     cell_names_textarea.value = UrlParams.get("cells");
