@@ -503,7 +503,7 @@ function chain_complex_from_names(dimension_face_names, boundary) {
             return;
         }
         dimension_face_names.get(dim-2).forEach((name) => {
-            ddF.set(name, 0);
+            ddF.set(name, 0n);
         });
         dF.forEach(([coeff, face]) => {
             if (boundary.has(face)) {
