@@ -56,9 +56,9 @@ function smithify(A, num_cols) {
     // The Algorithm
     // -------------
     // Do row and column operations to mutate D
-    // until D in Smith Normal Form.
+    // until D is in Smith Normal Form.
     // Do the corresponding row ops to S and col ops to T
-    // to maintain the invariant the SAT == D.
+    // to maintain the invariant that SAT == D.
     // Also keep track of the matrix inverses Sinv and Tinv.
 
     function generalized_row_op(i1, i2, x, y, z, w) {
@@ -174,7 +174,7 @@ function smithify(A, num_cols) {
     }
 
 
-    // ===== Phase 1: diagonalize =====
+    // ===== Phase 1: Make D diagonal =====
     for (let k = 0; k < m && k < n; k++) {
         for (;;) {
             for (let i = k + 1; i < m; i++) {
@@ -207,7 +207,7 @@ function smithify(A, num_cols) {
         }
     }
 
-    // ===== Phase 2: fix the divisibility =====
+    // ===== Phase 2: Fix the divisibility =====
     for (;;) {
         // Bubble the most divisible numbers toward the end.
         let done = true;
@@ -264,7 +264,7 @@ function cokernel(A, num_cols) {
     //         = Ubar * (Z^m / im(D)),
     // where Ubar * [x + (im D)] := [Ux + (im UD)],
     // Note that U is a morphism of pairs:
-    //     (X^m, im D) --> (X^m, im UD)
+    //     (Z^m, im D) --> (Z^m, im UD)
     // The morphism of pairs has an inverse, so when descending
     // to the quotients, Ubar also has an inverse.
     // The generators of Z^m/im(D) are the standard basis, and they

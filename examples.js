@@ -125,7 +125,7 @@ let EXAMPLES = new Map([
         "b: 0\n" +
         "K: 2a"
     )]],
-    ['z2_bar', [(
+    ['z2_nerve', [(
         "0:p\n" +
         "1:a\n" +
         "2:aa\n" +
@@ -149,7 +149,7 @@ let EXAMPLES = new Map([
         "aaaaaaaaa:aaaaaaaa-aaaaaaaa\n" +
         "aaaaaaaaaa:aaaaaaaaa+aaaaaaaaa"
     )]],
-    ['z3_bar', [(
+    ['z3_nerve', [(
         "0: p\n" +
         "1: a, b\n" +
         "2: aa, ab, ba, bb\n" +
