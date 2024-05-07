@@ -344,14 +344,141 @@
                 for many variables and relations simultaneously
                 by working with matrices and using
                 row and column operations to compute
-                the <a target="_blank" rel="noopener noreferrer" href="https://en.wikipedia.org/wiki/Smith_normal_form">Smith Normal Form</a> of the matrices.
-                See the source code <a target="_blank" rel="noopener noreferrer" href="https://github.com/sweeneyde/homology-js/blob/main/smith.js">here</a>.
-            </p>
-            <p>
+                the <a target="_blank" rel="noopener noreferrer" href="https://en.wikipedia.org/wiki/Smith_normal_form">Smith Normal Form</a> of boundary matrices.
                 Click <button onclick="do_example('tietze_result')">here</button>
                 to compute the equivalent of Example 2.
                 Generalizing from this example,
                 you could treat this page as an <em>Abelian group simplifier</em>!
+            </p>
+            <h2>Smith Normal Forms</h2>
+            <p>
+                Given any integer matrix <var>A</var>,
+                we can find invertible integer matrices
+                <var>S</var> and <var>T</var>
+                such that <var>D</var> := <var>S</var><var>A</var><var>T</var>
+                is a diagonal matrix:
+                we repeatedly apply row and column operations to <var>A</var>
+                until it is diagonal.
+                Even if <var>A</var> is not a square matrix,
+                the result <var>D</var> has the same shape as <var>A</var>
+                and can be made zero except on the one main diagonal.
+                Row operations are given by left-multiplying by elementary matrices
+                <var>S</var><sub>1</sub>, …
+                <var>S</var><sub>u</sub>,
+                and column operations are given by right-multiplying by elementary matrices
+                <var>T</var><sub>1</sub>, …
+                <var>T</var><sub>v</sub>,
+                so we find
+                <var>D</var> = <var>S</var><sub>u</sub>⋯<var>S</var><sub>1</sub><var>A</var><var>T</var><sub>1</sub>⋯<var>T</var><sub>v</sub>,
+                and put <var>S</var> = <var>S</var><sub>u</sub>⋯<var>S</var><sub>1</sub>
+                and <var>T</var> = <var>T</var><sub>1</sub>⋯<var>T</var><sub>v</sub>.
+                The inverse matrices can be computed at the same time,
+                as
+                <var>S</var><sup>-1</sup> = <var>S</var><sub>1</sub><sup>-1</sup>⋯<var>S</var><sub>u</sub><sup>-1</sup>
+                and
+                <var>T</var><sup>-1</sup> = <var>T</var><sub>v</sub><sup>-1</sup>⋯<var>T</var><sub>1</sub><sup>-1</sup>.
+                All matrices here have integer entries.
+            </p>
+            <h2>Using SNF to compute kernels and cokernels</h2>
+            <p>
+                Smith normal form can be used to compute the cokernel of
+                a ℤ-linear map (i.e. a matrix) <var>A</var> : ℤ<sup><var>n</var></sup> → ℤ<sup><var>m</var></sup>.
+                Let <var>D</var> be the Smith normal form for <var>A</var>,
+                and write <var>A</var> = <var>U</var><var>D</var><var>V</var>
+                for invertible <var>U</var> := <var>S</var><sup>-1</sup>
+                and <var>V</var> := <var>T</var><sup>-1</sup>.
+                Then coker <var>A</var> =
+                ℤ<sup><var>m</var></sup> / (im <var>U</var><var>D</var><var>V</var>)
+                = ℤ<sup><var>m</var></sup> / (im <var>U</var><var>D</var>).
+                Because <var>U</var> is invertible,
+                we have an isomorphism of pairs
+                <var>U</var> : (ℤ<sup><var>m</var></sup>, im <var>D</var>) → (ℤ<sup><var>m</var></sup>, im <var>UD</var>).
+                This descends to an isomorphism
+                ℤ<sup><var>m</var></sup> / im <var>D</var> → ℤ<sup><var>m</var></sup> / im <var>UD</var>.
+                The generators of ℤ<sup><var>m</var></sup> / im <var>D</var>
+                are the elements of the standard basis of ℤ<sup><var>m</var></sup>,
+                but the corresponding diagonal entries of <var>D</var> indicate
+                whether each generator generates a ℤ direct summand
+                (if the entry is 0 or the matrix is too small to have a corresponding entry),
+                a finite nontrivial cyclic direct summand ℤ/<var>d</var>ℤ (if the entry is <var>d</var> > 1),
+                or a trivial summand (if the entry is 1).
+                The image of this standard basis under <var>U</var>
+                gives the corresponding generators for ℤ<sup><var>m</var></sup> / im <var>UD</var> = coker <var>A</var>.
+            </p>
+            <p>
+                If a ℤ-linear map
+                <var>A</var> : ℤ<sup><var>n</var></sup> → ℤ<sup><var>m</var></sup>
+                has a Smith normal form <var>D</var> = <var>S</var><var>A</var><var>T</var>,
+                then by the invertibility of <var>S</var> and <var>T</var>,
+            </p>
+            <ul style="list-style-type:none;">
+                <li>
+                    ker <var>A</var>
+                    = {<var>x</var> : <var>A</var><var>x</var> = 0}
+                    = {<var>x</var> : <var>S</var><var>A</var><var>x</var> = 0}
+                    = {<var>T</var><var>x</var> : <var>S</var><var>A</var><var>T</var><var>x</var> = 0}
+                    = <var>T</var>({<var>x</var> : <var>S</var><var>A</var><var>T</var><var>x</var> = 0})
+                    = <var>T</var>({<var>x</var> : <var>D</var><var>x</var> = 0})
+                    = <var>T</var>(ker <var>D</var>).
+                </li>
+            </ul>
+            <h2>Using SNF to compute homology</h2>
+            <p>
+                Given ℤ-linear maps <var>A</var> : ℤ<sup><var>n</var></sup> → ℤ<sup><var>m</var></sup>
+                and <var>B</var> : ℤ<sup><var>m</var></sup> → ℤ<sup><var>k</var></sup>
+                satisfying <var>B</var><var>A</var> = 0,
+                we want to compute the homology (ker <var>B</var>) / (im <var>A</var>)
+                at ℤ<sup><var>m</var></sup>.
+            </p>
+            <p>
+                Since <var>B</var>(im <var>A</var>) = 0,
+                we can define <var>B'</var> : (ℤ<sup><var>m</var></sup> / im <var>A</var>) → ℤ<sup><var>k</var></sup>
+                such that <var>B</var>'∘<var>p</var> = <var>B</var>, where
+                <var>p</var> : ℤ<sup><var>m</var></sup> → (ℤ<sup><var>m</var></sup> / im <var>A</var>)
+                is the canonical projection.
+                Now the homology (ker <var>B</var>) / (im <var>A</var>) is exactly ker <var>B</var>',
+                since <var>p</var>(<var>x</var>) ∈ (ℤ<sup><var>m</var></sup> / im <var>A</var>)
+                satisfies <var>B</var>'(<var>p</var>(<var>x</var>)) = 0
+                exactly when <var>x</var> can be taken to satisfy <var>B</var><var>x</var> = 0.
+                We thus wish to compute the kernel of
+                <var>B</var>' : (coker <var>A</var>) → ℤ<sup><var>k</var></sup>.
+            </p>
+            <p>
+                Any torsion elements in coker <var>A</var> must get killed by <var>B</var>',
+                since there is no remaining torsion in ℤ<sup><var>k</var></sup>.
+                We thus compute coker <var>A</var> as in the previous section,
+                and list any torsion generators as living in the homology group
+                ker <var>B</var>'.
+                For each free generators <var>p</var>(<var>x</var>) of coker <var>A</var>,
+                we can find corresponding elements <var>x</var> of ℤ<sup><var>m</var></sup>,
+                and then form a matrix <var>G</var> : ℤ<sup><var>r</var></sup> → ℤ<sup><var>m</var></sup>
+                such that <var>p</var>∘<var>G</var> : ℤ<sup><var>r</var></sup> → coker <var>A</var>
+                embeds the free part of coker <var>A</var>.
+                We are doing this:
+            </p>
+            <ul style="list-style-type:none;">
+                <li>
+                    (ker <var>B</var>) / (im <var>A</var>)
+                    = ker (<var>B</var>' : coker <var>A</var> → ℤ<sup><var>k</var></sup>)
+                    = ker (<var>B</var>' : Tors(coker <var>A</var>) ⊕ Free(coker <var>A</var>) → ℤ<sup><var>k</var></sup>)
+                    = Tors(coker <var>A</var>) ⊕ ker (<var>B</var>' : <var>p</var><var>G</var>ℤ<sup><var>r</var></sup> → ℤ<sup><var>k</var></sup>)
+                </li>
+            </ul>
+            <p>
+                The second summand becomes
+            </p>
+            <ul style="list-style-type:none;">
+                <li>
+                    ker (<var>B</var>' : pGℤ<sup><var>r</var></sup> → ℤ<sup><var>k</var></sup>)
+                    = {<var>p</var><var>G</var>y ∈ <var>p</var><var>G</var>ℤ<sup><var>r</var></sup> : <var>B</var>'<var>p</var><var>G</var>y = 0}
+                    = {<var>p</var><var>G</var>y : y ∈ ℤ<sup><var>r</var></sup>, <var>B</var><var>G</var>y = 0}
+                    = pG(ker <var>B</var><var>G</var>)
+                </li>
+            </ul>
+            <p>
+                Hence we compute ker <var>B</var><var>G</var> as in the previous
+                section, and then apply <var>G</var> to get
+                representatives for the free generators.
             </p>
         </details>
     </div>
