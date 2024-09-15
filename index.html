@@ -264,17 +264,17 @@
                 often using the terminology "cycles modulo boundaries".
                 More explicitly, if we define <var>C<sub>i</sub></var>
                 to be chains (i.e. formal sums) of <var>i</var>-dimensional-cells,
-                and let ∂<sub><var>i</var></sub> : <var>C<sub>i</sub></var> → <var>C<sub>i−1</sub></var>
+                and let ∂<sub><var>i</var></sub> : <var>C</var><sub><var>i</var></sub> → <var>C</var><sub><var>i</var>−1</sub>
                 be the Abelian group homomorphism that maps a cell to its boundary,
                 then we define <var>H<sub>i</sub></var> to be the quotient
-                (ker ∂<sub><var>i</var></sub>) / (im ∂<sub><var>i+1</var></sub>)
+                (ker ∂<sub><var>i</var></sub>) / (im ∂<sub><var>i</var>+1</sub>)
                 of Abelian groups.
             </p>
             <h2>Example 1</h2>
             <p>
                 Suppose that <var>x</var>, <var>y</var>, <var>z</var> are 1-cells
                 and each with boundary <var>p</var> − <var>q</var> and
-                that <var>F</var> is a 2-cell with boundary <var>2x − 2y</var>.
+                that <var>F</var> is a 2-cell with boundary 2<var>x</var> − 2<var>y</var>.
                 We'll compute <var>H</var><sub>1</sub>.
             </p>
             <p>
@@ -360,19 +360,19 @@
                 and can be made zero except on the one main diagonal.
                 Row operations are given by left-multiplying by elementary matrices
                 <var>S</var><sub>1</sub>, …
-                <var>S</var><sub>u</sub>,
+                <var>S</var><sub><var>u</var></sub>,
                 and column operations are given by right-multiplying by elementary matrices
                 <var>T</var><sub>1</sub>, …
-                <var>T</var><sub>v</sub>,
+                <var>T</var><sub><var>v</var></sub>,
                 so we find
-                <var>D</var> = <var>S</var><sub>u</sub>⋯<var>S</var><sub>1</sub><var>A</var><var>T</var><sub>1</sub>⋯<var>T</var><sub>v</sub>,
+                <var>D</var> = <var>S</var><sub><var>u</var></sub>⋯<var>S</var><sub>1</sub><var>A</var><var>T</var><sub>1</sub>⋯<var>T</var><sub><var>v</var></sub>,
                 and put <var>S</var> = <var>S</var><sub>u</sub>⋯<var>S</var><sub>1</sub>
-                and <var>T</var> = <var>T</var><sub>1</sub>⋯<var>T</var><sub>v</sub>.
+                and <var>T</var> = <var>T</var><sub>1</sub>⋯<var>T</var><sub><var>v</var></sub>.
                 The inverse matrices can be computed at the same time,
                 as
-                <var>S</var><sup>-1</sup> = <var>S</var><sub>1</sub><sup>-1</sup>⋯<var>S</var><sub>u</sub><sup>-1</sup>
+                <var>S</var><sup>−1</sup> = <var>S</var><sub>1</sub><sup>−1</sup>⋯<var>S</var><sub><var>u</var></sub><sup>−1</sup>
                 and
-                <var>T</var><sup>-1</sup> = <var>T</var><sub>v</sub><sup>-1</sup>⋯<var>T</var><sub>1</sub><sup>-1</sup>.
+                <var>T</var><sup>−1</sup> = <var>T</var><sub><var>v</var></sub><sup>−1</sup>⋯<var>T</var><sub>1</sub><sup>−1</sup>.
                 All matrices here have integer entries.
             </p>
             <h2>Using SNF to compute kernels and cokernels</h2>
@@ -381,8 +381,8 @@
                 a ℤ-linear map (i.e. a matrix) <var>A</var> : ℤ<sup><var>n</var></sup> → ℤ<sup><var>m</var></sup>.
                 Let <var>D</var> be the Smith normal form for <var>A</var>,
                 and write <var>A</var> = <var>U</var><var>D</var><var>V</var>
-                for invertible <var>U</var> := <var>S</var><sup>-1</sup>
-                and <var>V</var> := <var>T</var><sup>-1</sup>.
+                for invertible <var>U</var> := <var>S</var><sup>−1</sup>
+                and <var>V</var> := <var>T</var><sup>−1</sup>.
                 Then coker <var>A</var> =
                 ℤ<sup><var>m</var></sup> / (im <var>U</var><var>D</var><var>V</var>)
                 = ℤ<sup><var>m</var></sup> / (im <var>U</var><var>D</var>).
@@ -465,10 +465,10 @@
             </p>
             <ul style="list-style-type:none;">
                 <li>
-                    ker (<var>B</var>' : pGℤ<sup><var>r</var></sup> → ℤ<sup><var>k</var></sup>)
-                    = {<var>p</var><var>G</var>y ∈ <var>p</var><var>G</var>ℤ<sup><var>r</var></sup> : <var>B</var>'<var>p</var><var>G</var>y = 0}
-                    = {<var>p</var><var>G</var>y : y ∈ ℤ<sup><var>r</var></sup>, <var>B</var><var>G</var>y = 0}
-                    = pG(ker <var>B</var><var>G</var>)
+                    ker (<var>B</var>' : <var>p</var><var>G</var>ℤ<sup><var>r</var></sup> → ℤ<sup><var>k</var></sup>)
+                    = {<var>p</var><var>G</var><var>y</var> ∈ <var>p</var><var>G</var>ℤ<sup><var>r</var></sup> : <var>B</var>'<var>p</var><var>G</var><var>y</var> = 0}
+                    = {<var>p</var><var>G</var><var>y</var> : <var>y</var> ∈ ℤ<sup><var>r</var></sup>, <var>B</var><var>G</var><var>y</var> = 0}
+                    = <var>p</var><var>G</var>(ker <var>B</var><var>G</var>)
                 </li>
             </ul>
             <p>
