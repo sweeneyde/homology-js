@@ -36,17 +36,25 @@ let EXAMPLES = new Map([
         "S:0"
     )]],
     ['torus_simp', [(
-        "0: a, b, c, d, e, f, g\n" +
-        "1: ab,ac,ad,ae,af,ag,bc,bd,be,bf,bg,cd,ce,cf,cg,de,df,dg,ef,eg,fg\n" +
-        "2: abc,abf,acg,ade,adf,aeg,bce,bde,bdg,bfg,cdf,cdg,cef,efg"
+        "0: v00,v01,v02, v10,v11,v12, v20,v21,v22\n" +
+        "1: a00,a01,a02, a10,a11,a12, a20,a21,a22, b00,b01,b02, b10,b11,b12, b20,b21,b22, c00,c01,c02, c10,c11,c12, c20,c21,c22\n" +
+        "2: U00,U01,U02, U10,U11,U12, U20,U21,U22, L00,L01,L02, L10,L11,L12, L20,L21,L22"
     ), (
-        "ab:b-a; ac:c-a; ad:d-a; ae:e-a; af:f-a; ag:g-a; bc:c-b\n" +
-        "bd:d-b; be:e-b; bf:f-b; bg:g-b; cd:d-c; ce:e-c; cf:f-c\n" +
-        "cg:g-c; de:e-d; df:f-d; dg:g-d; ef:f-e; eg:g-e; fg:g-f\n" +
-        "abc:bc-ac+ab; abf:bf-af+ab; acg:cg-ag+ac; ade:de-ae+ad\n" +
-        "adf:df-af+ad; aeg:eg-ag+ae; bce:ce-be+bc; bde:de-be+bd\n" +
-        "bdg:dg-bg+bd; bfg:fg-bg+bf; cdf:df-cf+cd; cdg:dg-cg+cd\n" +
-        "cef:ef-cf+ce; efg:fg-eg+ef"
+        "a00:v01-v00; a01:v02-v01; a02:v00-v02\n" +
+        "a10:v11-v10; a11:v12-v11; a12:v10-v12\n" +
+        "a20:v21-v20; a21:v22-v21; a22:v20-v22\n" +
+        "b00:v10-v00; b10:v20-v10; b20:v00-v20\n" +
+        "b01:v11-v01; b11:v21-v11; b21:v01-v21\n" +
+        "b02:v12-v02; b12:v22-v12; b22:v02-v22\n" +
+        "c00:v11-v00; c01:v12-v01; c02:v10-v02\n" +
+        "c10:v21-v10; c11:v22-v11; c12:v20-v12\n" +
+        "c20:v01-v20; c21:v02-v21; c22:v00-v22\n" +
+        "U00:b01-c00+a00; U01:b02-c01+a01; U02:b00-c02+a02\n" +
+        "U10:b11-c10+a10; U11:b12-c11+a11; U12:b10-c12+a12\n" +
+        "U20:b21-c20+a20; U21:b22-c21+a21; U22:b20-c22+a22\n" +
+        "L00:a10-c00+b00; L10:a20-c10+b10; L20:a00-c20+b20\n" +
+        "L01:a11-c01+b01; L11:a21-c11+b11; L21:a01-c21+b21\n" +
+        "L02:a12-c02+b02; L12:a22-c12+b12; L22:a02-c22+b22"
     )]],
     ['torus_delta', [(
         "0: v\n" +
@@ -66,18 +74,6 @@ let EXAMPLES = new Map([
     ), (
         "a:0; b:0;\n" +
         "T: a + b - a - b"
-    )]],
-    ['rp2_simp', [(
-        "0: a,b,c,d,e,f\n" +
-        "1: ab,ac,ad,ae,af,bc,bd,be,bf,cd,ce,cf,de,df,ef\n" +
-        "2: abc,abf,acd,ade,aef,bce,bde,bdf,cdf,cef"
-    ), (
-        "ab:b-a; ac:c-a; ad:d-a; ae:e-a; af:f-a; bc:c-b\n" +
-        "bd:d-b; be:e-b; bf:f-b; cd:d-c; ce:e-c; cf:f-c\n" +
-        "de:e-d; df:f-d; ef:f-e\n" +
-        "abc:bc-ac+ab; abf:bf-af+ab; acd:cd-ad+ac; ade:de-ae+ad\n" +
-        "aef:ef-af+ae; bce:ce-be+bc; bde:de-be+bd; bdf:df-bf+bd\n" +
-        "cdf:df-cf+cd; cef:ef-cf+ce"
     )]],
     ['rp2_delta', [(
         "0: v, w\n" +
