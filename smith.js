@@ -25,6 +25,11 @@ function check_rectangular(A, num_cols) {
         if (row.length != num_cols) {
             throw new Error("num_cols does not match given matrix");
         }
+        row.forEach((x) => {
+            if (typeof x != "bigint") {
+                throw new Error("not matrix every entry was a bigint.");
+            }
+        })
     })
 }
 
@@ -299,131 +304,216 @@ function cokernel(A, num_cols) {
             free_generators:free_generators}
 }
 
-function kernel_basis(A, num_cols) {
-    let m = A.length;
-    let n = num_cols;
-    check_rectangular(A, n);
-    let smith_A = smithify(A, n);
-    let D = smith_A.D
-    let T = smith_A.T
-    // If D = SAT then {Ax=0} = {SAx=0} = T*{SATx=0} = T*{Dx=0}.
-    let ker_D_indices = []
-    for (let j = 0; j < n; j++) {
-        if (j >= m || D[j][j] == 0) {
-            ker_D_indices.push(j);
-        }
-    }
-    let columns = [];
-    ker_D_indices.forEach((j) => {
-        let col = [];
-        for (let i = 0; i < n; i++) {
-            col.push(T[i][j]);
-        }
-        columns.push(col);
-    });
-    // TODO: do some operations on these to simplify?
-    return columns;
-}
-
-function homology(A, num_A_cols, B, num_B_cols) {
+function matrix_multiply(A, num_A_cols, B, num_B_cols) {
     check_rectangular(A, num_A_cols);
     check_rectangular(B, num_B_cols);
-
-    // Compute the homology at
-    //        A           B
-    // Z^n ------> Z^m ------> Z^k
-    let n = num_A_cols;
-    let m = A.length;
-    let k = B.length;
-    if (num_B_cols != m) {
-        throw new Error(`Matrices not composable A has ${m} rows, but B has ${num_B_cols} columns.`);
+    if (num_A_cols != B.length) {
+        throw new Error(`Matrices not composable: left has ${num_A_cols} but right has ${B.length} columns.`);
     }
-
-    // Assert BA=0.
-    for (let i1 = 0; i1 < k; i1++) {
-        for (let i3 = 0; i3 < n; i3++) {
+    let result = [];
+    A.forEach((row) => {result.push([])});
+    for (let i = 0; i < A.length; i++) {
+        for (let j = 0; j < num_B_cols; j++) {
             let s = 0n;
-            for (let i2 = 0; i2 < m; i2++) {
-                s += B[i1][i2] * A[i2][i3];
+            for (let k=0; k < num_A_cols; k++) {
+                s += A[i][k]*B[k][j];
             }
-            if (s != 0n) {
-                throw new Error("Matrices do not compose to zero");
-            }
+            result[i][j] = s;
         }
     }
-
-    // Since BA=0, we can write Bbar: coker(A) --> Z^k.
-    // defined by Bbar([x]) = Bx.
-    // Then homology is (ker B)/(im A) = ker Bbar,
-    // since these are both the same subquotient.
-    let coker_A = cokernel(A, n);
-
-    // compute ker(Bbar: coker(A) --> Z^k)
-    // Bbar kills all of the torsion in coker(A)
-    // because there's no torsion left in Z^k.
-    // The entire torsion part of coker(A)
-    // is therefore the torsion part of ker(Bbar).
-    let torsion_generators = coker_A.torsion_generators;
-
-    // Write G: Z^(m-r) --> Z^m
-    // Such that [] o G: Z^(m-r) --> coker(A)
-    // is embedding of free summand
-    let G = [];
-    let freegen = coker_A.free_generators;
-    let m_r = freegen.length;
-    // transpose: freegen has m_r lists of m each
-    // we want G to have m lists of m_r each
-    for (let i = 0; i < m; i++) {
-        let row = [];
-        for (let j = 0; j < m_r; j++) {
-            row[j] = freegen[j][i];
-        }
-        G.push(row);
-    }
-
-    // H = (ker B) / (im A)
-    //   = ker(Bbar: coker(A) --> Z^k)
-    //   = ker(Bbar: Tors(coker(A)) (+) Free(coker(A)) --> Z^k)
-    //   = Tors(coker(A)) (+) ker(Bbar: [G(Z^(m-r))] --> Z^k)
-    // The second summand is
-    // ker(Bbar: [G(Z^(m-r))] --> Z^k)
-    //   = {[G(v)] in [G(Z^(m-r))] : Bbar([G(v)]) = 0}
-    //   = [G({v in Z^(m-r) : Bbar([G(v)]) = 0})]
-    //   = [G({v in Z^(m-r) : BG(v) = 0})]
-    //   = [G(ker(B o G))]
-
-    let BG = [];
-    for (let i = 0; i < k; i++) {
-        BG[i] = [];
-        let Bi = B[i];
-        for (let j = 0; j < m_r; j++) {
-            let s = 0n;
-            for (let q = 0; q < m; q++) {
-                s += Bi[q] * G[q][j];
-            }
-            BG[i][j] = s;
-        }
-    }
-    let ker_BG = kernel_basis(BG, m_r);
-    let free_generators = [];
-    for (let _i = 0; _i < ker_BG.length; _i++) {
-        free_generators[_i] = [];
-        let gen = ker_BG[_i];
-        for (let i = 0; i < m; i++) {
-            let s = 0n;
-            let Gi = G[i];
-            for (let q = 0; q < Gi.length; q++) {
-                s += Gi[q] * gen[q];
-            }
-            free_generators[_i][i] = s;
-        }
-    }
-
-    return {torsion_generators: torsion_generators,
-            free_generators: free_generators}
+    return result;
 }
 
-function chain_complex_from_names(dimension_face_names, boundary) {
+function cyclic_kernel(x0, m) {
+    // Kernel of the multiplication by x0 map Z --x0--> Z/mZ
+    // Examples: ker(Z --1--> Z) = 0Z
+    //           ker(Z --2--> Z) = 0Z
+    //           ker(Z --0--> Z) = 1Z
+    //           ker(Z --1--> Z/4) = 4Z
+    //           ker(Z --2--> Z/4) = 2Z
+    //           ker(Z --0--> Z/4) = 1Z
+    let [_, __, x] = xgcd(x0, m);
+    if (x == 0n) {
+        return 1n;
+    }
+    else {
+        if (m % x !== 0n) {
+            throw new Error("bad divisibility");
+        }
+        return m / x;
+    }
+}
+
+function homology(A, num_A_cols, B, num_B_cols, coeff) {
+    check_rectangular(A, num_A_cols);
+    check_rectangular(B, num_B_cols);
+    if (typeof coeff != "bigint") {
+        throw new Error(`modulus ${coeff} is not a BigInt.`);
+    }
+    matrix_multiply(B, num_B_cols, A, num_A_cols).forEach(
+        (row) => row.forEach((x) => {
+            if (x != 0n) {
+                throw new Error("Matrices do not compose to zero");
+            }
+        })
+    );
+
+    /*
+     * Compute the homology at
+     *        A           B
+     * R^n ------> R^m ------> R^k
+     * where R is the cyclic group Z/coeff.
+     */
+
+    /*
+     * Strategy
+     * --------
+     * Start by using the smith normal form SBT=D. Then:
+     *
+     *     (ker B) = ker(Sinv D Tinv) = ker(D Tinv) = T(ker D).
+     *
+     * Now ker(D) is also im(E) for some m-by-m diagonal matrix E.
+     * So now we have the homology group:
+     *
+     *     H = (ker B)/(im A) = T(im E)/im(A) = Tbar[(im E)/(im Tinv A)]
+     *
+     * Here Tbar[x + im Tinv A] := Tx + im A,
+     * the bijection T descended to the quotient.
+     * We already know that (im Tinv A) is a subset of (im E),
+     * so we can make a new matrix F of the same size as Tinv A
+     * with EF = Tinv A: compute F by dividing out the rows of
+     * Tinv A by the corresponding diagonal entry of E. Now:
+     *
+     *     H = Tbar[im E / im EF] = Tbar[E R^m / EF R^n]
+     *
+     * To compute E R^m / EF R^n using integers, we can quotient
+     * by the coefficient modulus and the image of EF simultaneously:
+     *
+     *     H = Tbar[E Z^m / (EF Z^n + coeff*Z^m)]
+     * 
+     * 
+     * 
+     * We'd like to "factor out" the E like we did with T,
+     * but because E is not injective, this isn't as straightforward.
+     * For example, if we're computing
+     *     (0 0)         (0 0)
+     *     (0 2) Z^2     (0 2) Z^2           (0 0)     Z^2
+     *     ---------   = ----------------- = (0 2) -----------
+     *     (0 0 0)       (0 0) (0 0 0)             (0 0 0)
+     *     (4 8 4) Z^3   (0 2) (2 4 2) Z^3         (2 4 2) Z^3
+     *
+     *                   (0 0)    (1)         (0)
+     *                 = (0 2) ( Z(0) (+) Z/2 (1))
+     * ...then applying the E matrix [0 0; 0 2] changes the isomorphism
+     * type from (Z + Z/2) to just Z/2.
+     *
+     * To prevent this and ensure the cokernel has the right isomorphism
+     * type, we can ensure that the zeros are already dead by adding
+     * in extra columns to EF:
+     *     (0 0)
+     *     (0 2) Z^2             (0 0)     Z^2
+     *     ------------------- = (0 2) -----------
+     *     (0 0) (0 0 0 1)             (0 0 0 1)
+     *     (0 2) (2 4 2 0) Z^3         (2 4 2 0) Z^3
+     *
+     *                   (0 0)      (0)
+     *                 = (0 2)  Z/2 (1)
+     *                       (0)
+     *                 = Z/2 (2)
+     * Here, the E matrix was injective on the space spanned by the generators
+     * because
+     */
+
+    let smith_B = smithify(B, num_B_cols);
+    let T = smith_B.T;
+    let Tinv = smith_B.Tinv;
+    let D = smith_B.D;
+
+    // Make im(E) == ker(D).
+    // Specifically, im(F) = f_1 R (+) ... (+) f_m R
+    let E_entries = [];
+    for (let j = 0; j < num_B_cols; j++) {
+        let entry = j >= B.length ? 0n : D[j][j];
+        E_entries.push(cyclic_kernel(entry, coeff));
+    }
+
+    let num_Tinv_A_cols = num_A_cols;
+    let Tinv_A = matrix_multiply(Tinv, num_B_cols, A, num_A_cols);
+    check_rectangular(Tinv_A, num_Tinv_A_cols);
+    console.assert(Tinv_A.length == num_B_cols);
+    if (coeff != 0n) {
+        for (let i = 0; i < num_B_cols; i++) {
+            let row = Tinv_A[i];
+            for (let j = 0; j < num_B_cols; j++) {
+                row.push(i == j ? coeff : 0n);
+            }
+        }
+        num_Tinv_A_cols = num_A_cols + num_B_cols;
+        check_rectangular(Tinv_A, num_Tinv_A_cols);
+    }
+
+    let Einv_Tinv_A = [];
+    for (let i = 0; i < num_B_cols; i++) {
+        let q = E_entries[i];
+        if (q == 0n) {
+            if (coeff != 0n) {
+                throw new Error(`coeff was nonzero ${coeff} but q was zero`);
+            }
+            function divzero(x) {
+                if (x !== 0n) {
+                    throw new Error("Entry was unexpectedly nonzero");
+                }
+                return x;
+            }
+            Einv_Tinv_A.push(Tinv_A[i].map(divzero));
+        } else {
+            function divq(x) {
+                if (x % q != 0n) {
+                    throw new Error("Entry was not divisible");
+                }
+                return x / q;
+            }
+            Einv_Tinv_A.push(Tinv_A[i].map(divq));
+        }
+    }
+    let num_Einv_Tinv_A_cols = num_Tinv_A_cols;
+    if (coeff == 0n) {
+        for (let i=0; i < E_entries.length; i++) {
+            let entry = E_entries[i];
+            if (entry == 0n) {
+                // Ensure that things
+                for (let j=0; j < Einv_Tinv_A.length; j++) {
+                    Einv_Tinv_A[j].push(j == i ? 1n : 0n);
+                }
+                num_Einv_Tinv_A_cols += 1;
+            }
+        }
+    }
+    check_rectangular(Einv_Tinv_A, num_Einv_Tinv_A_cols);
+    let cok = cokernel(Einv_Tinv_A, num_Einv_Tinv_A_cols);
+
+    function TE(v) {
+        console.assert(v.length == num_B_cols);
+        let Ev = [];
+        for (let i = 0; i < num_B_cols; i++) {
+            Ev.push(v[i] * E_entries[i]);
+        }
+        return T.map((row) => {
+            s = 0n;
+            for (let i = 0; i < num_B_cols; i++) {
+                s += row[i] * Ev[i];
+            }
+            return s
+        });
+    }
+
+    let result_torsion_generators = cok.torsion_generators.map(([v, order]) => [TE(v), order]);
+    let result_free_generators = cok.free_generators.map(TE)
+    return {torsion_generators: result_torsion_generators,
+            free_generators: result_free_generators}
+}
+
+function chain_complex_from_names(dimension_face_names, boundary, relative) {
     let name_to_dimension = new Map();
     let name_to_index = new Map();
     let dimension_to_size = new Map([[0, 0]]);
@@ -519,8 +609,66 @@ function chain_complex_from_names(dimension_face_names, boundary) {
         });
     });
 
-    return {min_dim:min_dim, max_dim:max_dim, matrices:matrices,
-            dimension_to_size:dimension_to_size}
+    if (relative.length == 0) {
+        return {dimension_face_names:dimension_face_names,
+                min_dim:min_dim,
+                max_dim:max_dim,
+                matrices:matrices,
+                dimension_to_size:dimension_to_size}
+    }
+
+    //////////////////////////////////////////////
+    // Now handling relativizing the chain complex
+    //////////////////////////////////////////////
+
+    let set_relative = new Set(relative);
+    relative.forEach((name) => {
+        if (!name_to_dimension.has(name)) {
+            throw new Error(`Unknown cell "${name}" to relativize`);
+        }
+        if (boundary.has(name)) {
+            boundary.get(name).forEach(([coeff, face]) => {
+                if (!set_relative.has(face)) {
+                    throw new Error(`Relative complex not a complex: boundary of ${name} included ${face}`);
+                }
+            });
+        }
+    });
+    let relative_dimension_face_names = new Map();
+    let relative_dimension_to_size = new Map(dimension_to_size);
+    dimension_face_names.forEach((name_list, dim) => {
+        let filtered = name_list.filter((name)=>!set_relative.has(name));
+        relative_dimension_face_names.set(dim, filtered);
+        relative_dimension_to_size.set(dim, filtered.length);
+    });
+    let to_original_index = new Map();
+    relative_dimension_face_names.forEach((name_list, dim) => {
+        to_original_index.set(dim, name_list.map((name) => name_to_index.get(name)));
+    })
+    let relative_matrices = new Map();
+    // Make the sub-matrices
+    for (let dim = max_dim + 1; dim >= min_dim; dim--) {
+        let m = relative_dimension_to_size.get(dim - 1);
+        let n = relative_dimension_to_size.get(dim);
+        let i_to_i0 = to_original_index.get(dim - 1);
+        let j_to_j0 = to_original_index.get(dim);
+        let M0 = matrices.get(dim);
+        let M = [];
+        for (let i = 0; i < m; i++) {
+            let i0 = i_to_i0[i];
+            M[i] = [];
+            for (let j = 0; j < n; j++) {
+                let j0 = j_to_j0[j];
+                M[i][j] = M0[i0][j0];
+            }
+        }
+        relative_matrices.set(dim, M);
+    }
+    return {dimension_face_names:relative_dimension_face_names,
+            min_dim:min_dim,
+            max_dim:max_dim,
+            matrices:relative_matrices,
+            dimension_to_size:relative_dimension_to_size}
 }
 
 function transpose(A, num_A_cols) {
@@ -537,19 +685,20 @@ function transpose(A, num_A_cols) {
     return result;
 }
 
-function homology_from_names(dimension_face_names, boundary, co) {
+function homology_from_names(dimension_face_names0, boundary, co, coeff, relative) {
     function to_names(name_list, gen) {
         let namegen = [];
         for (let i = 0; i < gen.length; i++) {
             let coeff = gen[i];
             if (coeff != 0n) {
+                console.assert(i < name_list.length);
                 namegen.push([coeff, name_list[i]]);
             }
         }
         return namegen;
     }
-    let {min_dim, max_dim, matrices, dimension_to_size}
-        = chain_complex_from_names(dimension_face_names, boundary);
+    let {dimension_face_names, min_dim, max_dim, matrices, dimension_to_size}
+        = chain_complex_from_names(dimension_face_names0, boundary, relative);
     let result = [];
     for (let dim = min_dim; dim <= max_dim; dim++) {
         let A = matrices.get(dim + 1);
@@ -558,10 +707,10 @@ function homology_from_names(dimension_face_names, boundary, co) {
         let m = dimension_to_size.get(dim);
         let H;
         if (co) {
-            H = homology(transpose(B, m), B.length, transpose(A, n), A.length);
+            H = homology(transpose(B, m), B.length, transpose(A, n), A.length, coeff);
         }
         else {
-            H = homology(A, n, B, m);
+            H = homology(A, n, B, m, coeff);
         }
         let name_list = dimension_face_names.get(dim);
         let free_generators = H.free_generators.map(

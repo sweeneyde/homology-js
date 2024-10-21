@@ -63,7 +63,7 @@ function parse_boundary(text) {
         let [name, rest] = colonsplit;
         name = name.trim();
         if (!face_name_regex.test(name)) {
-            throw new Error(`name ${name} is invalid`);
+            throw new Error(`name "${name}" is invalid`);
         }
         if (result.has(name)) {
             throw new Error(`duplicate boundary entry for ${name}`)
@@ -106,7 +106,7 @@ function parse_boundary(text) {
             }
             let boundary_name = chunk.slice(1 + spaces + digits).trim();
             if (!face_name_regex.test(boundary_name)) {
-                throw new Error(`name ${boundary_name} is invalid`);
+                throw new Error(`name "${boundary_name}" is invalid`);
             }
             chain.push([coeff, boundary_name]);
         }
@@ -115,17 +115,68 @@ function parse_boundary(text) {
     return result;
 }
 
-function get_homology_result_string(cell_names_text, boundary_text, co) {
+function parse_relative(relative_text) {
+    relative_text = relative_text.trim();
+    if (relative_text.endsWith(",")) {
+        relative_text = relative_text.slice(0, relative_text.length - 1).trim();
+    }
+    if (relative_text == "") {
+        return [];
+    }
+    let names = relative_text.split(",").map((s=>s.trim()));
+    let set_names = new Set();
+    names.forEach((name) => {
+        if (!face_name_regex.test(name)) {
+            throw new Error(`name "${name}" is invalid`);
+        }
+        if (set_names.has(name)) {
+            throw new Error(`Duplicate cell ${name} in relative subcomplex`)
+        }
+        set_names.add(name);
+    });
+    return names;
+}
+
+function parse_coeff(coeff_text) {
+    if (coeff_text == "") {
+        return 0n;
+    }
+    else if (/^(\d|\s|_)+$/.test(coeff_text)) {
+        return BigInt(coeff_text.replace(/\s|_/g, ''));
+    }
+    else {
+        throw new Error(`Couldn't parse modulus "${coeff_text}" as a nonnegative integer`);
+    }
+}
+
+function get_homology_result_label_and_string(
+    cell_names_text,
+    boundary_text,
+    co,
+    coeff_text,
+    relative_text,
+) {
     let result = null;
+    let coeff = null;
+    let relative = null;
     try {
+        coeff = parse_coeff(coeff_text);
         let cell_names = parse_cell_names(cell_names_text);
         let boundary = parse_boundary(boundary_text);
-        result = homology_from_names(cell_names, boundary, co);
+        relative = parse_relative(relative_text);
+        result = homology_from_names(cell_names, boundary, co, coeff, relative);
     }
     catch (err) {
         console.error(err);
-        return "Error: " + err.message;
+        return ["Result", "Error: " + err.message, false];
     }
+    let label_text = (
+        (relative.length > 0 ? "Relative " : "")
+        + (co ? "Cohomology" : "Homology")
+        + " with "
+        + (coeff === 0n ? "ℤ" : `ℤ/${coeff.toString()}ℤ`)
+        + " coefficients"
+    );
     let string_result = [];
     result.forEach(([dim, {free_generators, torsion_generators}]) => {
         let head;
@@ -151,7 +202,7 @@ function get_homology_result_string(cell_names_text, boundary_text, co) {
         });
         string_result.push("");
     });
-    return string_result.join("\r\n");
+    return [label_text, string_result.join("\r\n"), true];
 }
 
 let cell_names_textarea = document.getElementById("cell_names");
@@ -159,41 +210,50 @@ let boundary_textarea = document.getElementById("boundary");
 let output_textarea = document.getElementById("output_textarea");
 let auto_check = document.getElementById("auto_check");
 let co_check = document.getElementById("co_check");
-let permalink_link = document.getElementById("permalink_link");
+let coeff_input = document.getElementById("coeff_input");
+let output_label = document.getElementById("output_label");
+let relative_input = document.getElementById("relative");
 
 function update() {
     // Update result
     output_textarea.value = "...";
-    let result_string = get_homology_result_string(
+    output_label.innerHTML = "Processing...";
+    output_textarea.style.color = "black";
+    // output_textarea.style.border = "none"
+    output_label.style.color = "black";
+
+    let [title_string, result_string, ok] = get_homology_result_label_and_string(
         cell_names_textarea.value,
         boundary_textarea.value,
-        co_check.checked);
+        co_check.checked,
+        coeff_input.value,
+        relative_input.value,
+    );
     output_textarea.value = result_string;
+    output_label.innerHTML = title_string;
 
-    // Update permalink
-    let new_url = new URL(myUrl.href);
-    new_url.searchParams.set("cells", cell_names_textarea.value);
-    new_url.searchParams.set("boundary", boundary_textarea.value);
-    permalink_link.setAttribute("href", new_url);
+    let color = ok ? "#0000ff" : "#ff0000";
+    output_textarea.style.color = color;
+    output_label.style.color = color;
 }
 
-function keystroke() {
-    if (auto_check.checked) {
-        update();
+
+// https://stackoverflow.com/a/14029861/11461120
+[
+    cell_names_textarea,
+    boundary_textarea,
+    coeff_input,
+    relative_input,
+].forEach((element) => {
+    if (element.addEventListener) {
+        element.addEventListener('input', update, false);
+    } else if (element.attachEvent) {
+        element.attachEvent('onpropertychange', update);
     }
     else {
-        output_textarea.value = "";
-        permalink_link.setAttribute("href", "javascript:void(0);");
+        alert("This browser cannot detect when text fields change?");
     }
-}
-// https://stackoverflow.com/a/14029861/11461120
-if (cell_names_textarea.addEventListener) {
-    cell_names_textarea.addEventListener('input', keystroke, false);
-    boundary_textarea.addEventListener('input', keystroke, false);
-} else if (cell_names_textarea.attachEvent) {
-    cell_names_textarea.attachEvent('onpropertychange', keystroke);
-    boundary_textarea.addEventListener('onpropertychange', keystroke);
-}
+})
 co_check.addEventListener('change', update);
 
 function do_example(ex_name) {
@@ -203,14 +263,7 @@ function do_example(ex_name) {
     update();
 }
 
-
-const myUrl = new URL(window.location.href);
-const UrlParams = myUrl.searchParams;
-if (UrlParams.has("cells") && UrlParams.has("boundary")) {
-    cell_names_textarea.value = UrlParams.get("cells");
-    boundary_textarea.value = UrlParams.get("boundary");
-    update();
-}
-else {
-    do_example("torus_delta");
-}
+co_check.checked = false;
+coeff_input.value = "";
+relative_input.value = "";
+do_example("torus_delta");

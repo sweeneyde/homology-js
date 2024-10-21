@@ -30,6 +30,16 @@ let EXAMPLES = new Map([
         "ABB:xBB-AxB+ABx; BAA:xAA-BxA+BAx; BAB:xAB-BxB+BAx\n" +
         "BBA:xBA-BxA+BBx; BBB:xBB-BxB+BBx"
     )]],
+    ['globe', [(
+        "0: p, q\n" +
+        "1: e, f\n" +
+        "2: N, S\n"
+    ), (
+        "e: q - p\n" +
+        "f: q - p\n" +
+        "N: f - e\n" +
+        "S: f - e"
+    )]],
     ['sphere_cw', [(
         "0:p; 2:S"
     ), (
@@ -61,9 +71,9 @@ let EXAMPLES = new Map([
         "1: a, b, c\n" +
         "2: U, L"
     ), (
-        "a: 0\n" +
-        "b: 0\n" +
-        "c: 0\n" +
+        "a: v - v\n" +
+        "b: v - v\n" +
+        "c: v - v\n" +
         "U: b - c + a\n" +
         "L: a - c + b"
     )]],
@@ -105,6 +115,19 @@ let EXAMPLES = new Map([
     ), (
         "M: a1 + b1 - a1 - b1 + a2 + b2 - a2 - b2\n"
     )]],
+    ['genus2_delta', [(
+        "0: o, x\n" +
+        "1: a1,a2,b1,b2, r1,s1,t1,u1, r2,s2,t2,u2\n" +
+        "2: R1,S1,T1,U1, R2,S2,T2,U2"
+    ), (
+        "a1:x-x; b1:x-x; a2:x-x; b2:x-x\n" +
+        "r1:x-o; s1:x-o; t1:x-o; u1:x-o\n" +
+        "r2:x-o; s2:x-o; t2:x-o; u2:x-o\n" +
+        "R1:a1-s1+r1; S1:b1-t1+s1\n" +
+        "T1:a1-t1+u1; U1:b1-u1+r2\n" +
+        "R2:a2-s2+r2; S2:b2-t2+s2\n" +
+        "T2:a2-t2+u2; U2:b2-u2+r1"
+    )]],
     ['genus3', [(
         "0: p\n" +
         "1: a1, b1, a2, b2, a3, b3\n" +
@@ -120,6 +143,69 @@ let EXAMPLES = new Map([
         "a: 0\n" +
         "b: 0\n" +
         "K: 2a"
+    )]],
+    ['klein_circle', [(
+        "0: vv\n" +
+        "1: av, bv, ve\n" +
+        "2: Kv, ae, be\n" +
+        "3: Ke"
+    ), (
+        "av:vv-vv; bv:vv-vv; ve:vv-vv\n" +
+        "Kv:2av; ae:ve-ve-av+av; be:ve-ve-bv+bv\n" +
+        "Ke:2ae+Kv-Kv"
+    )]],
+    ['klein_klein', [(
+        "0: vv\n" +
+        "1: av, bv, va, vb\n" +
+        "2: Kv, vK, aa, ab, ba, bb\n" +
+        "3: aK, bK, Ka, Kb\n" +
+        "4: KK"
+    ), (
+        "av:vv-vv; bv:vv-vv; va:vv-vv; vb:vv-vv\n" +
+        "Kv:2av; vK:2va\n" +
+        "aa:va-va-av+av; ab:vb-vb-av+av\n" +
+        "ba:va-va-bv+bv; bb:vb-vb-bv+bv\n" +
+        "aK:vK-vK-2aa; bK:vK-vK-2ba\n" +
+        "Ka:2aa+Kv-Kv; Kb:2ab+Kv-Kv\n" +
+        "KK:2aK+2Ka"
+    )]],
+    ['rp2_circle', [(
+        "0: vv\n" +
+        "1: av, ve\n" +
+        "2: Pv, ae\n" +
+        "3: Pe"
+    ), (
+        "av: vv-vv\n" +
+        "ve: vv-vv\n" +
+        "Pv: 2av\n" +
+        "ae: ve-ve-av+av\n" +
+        "Pe: 2ae+Pv-Pv"
+    )]],
+    ['sphere_circle', [(
+        "0: vv\n" +
+        "1: ve\n" +
+        "2: Sv\n" +
+        "3: Se"
+    ), (
+        "ve:vv-vv\n" +
+        "Sv:0\n" +
+        "Se:Sv-Sv"
+    )]],
+    ['rp3', [(
+        "0: v\n" +
+        "1: e\n" +
+        "2: f\n" +
+        "3: X"
+    ), (
+        "e: v - v\n" +
+        "f: e + e\n" +
+        "X: f - f"
+    )]],
+    ['S3', [(
+        "0: v\n" +
+        "3: S"
+    ), (
+        "S: 0"
     )]],
     ['z2_nerve', [(
         "0:p\n" +

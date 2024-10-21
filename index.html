@@ -99,6 +99,7 @@
             height: 150px;
             width: 100%;
             white-space: pre;
+            /* border: solid 1px; */
         }
         .inline-div {
            display:inline-block;
@@ -113,6 +114,8 @@
         }
         .controls input {
             margin: 0px 0px 0px 0px;
+            font-family: math_symbol, monospace;
+            font-size: 13px;
         }
         .controls label {
             margin: 0px 20px 0px 0px;
@@ -130,22 +133,20 @@
                 <p>
                     To use this calculator,
                     consider a shape (cell complex) and give a name
-                    to each face (cell) of the shape.
+                    to each cell (vertex, edge, face, etc.).
                     For example, the diagram to the right represents a torus
-                    constructed with <span class="nobr">one 0-cell (named <var>v</var>)</span>,
-                    <span class="nobr">three 1-cells (named <var>a</var>, <var>b</var>, and <var>c</var>)</span>,
-                    and <span class="nobr">two 2-cells (named <var>U</var> and <var>L</var>)</span>.
+                    constructed with <span class="nobr">one 0-dimensinal cell (named <var>v</var>)</span>,
+                    <span class="nobr">three 1-dimensional cells (named <var>a</var>, <var>b</var>, and <var>c</var>)</span>,
+                    and <span class="nobr">two 2-dimensional cells (named <var>U</var> and <var>L</var>)</span>.
                 </p>
                 <p>
                     In the first input box below, list the cells
                     of each dimension. In the second input box,
                     specify the boundary of each face in terms
                     of the cells one dimension lower.
-                    The output box will list the
-                    (integral, cellular)
+                    The blue output box will list the
                     <a target="_blank" rel="noopener noreferrer" href="https://en.wikipedia.org/wiki/Homology_(mathematics)">homology</a>
-                    or cohomology
-                    of the resulting shape,
+                    or cohomology of the resulting shape,
                     algebraic structures representing
                     how the holes in each dimension fit together.
                 </p>
@@ -169,28 +170,32 @@
             <label for="boundary"><h2>Boundary</h2></label>
             <textarea class="input_textarea" id="boundary" name="boundary" spellcheck="false"></textarea>
         </div>
-
-        <label for="output_textarea"><h2>Homology Result</h2></label>
-        <textarea id="output_textarea" name="output_textarea" class="output_textarea" readonly></textarea>
+        <br/>
         <div class="controls">
-            <button onclick="update()">Compute</button>
             <span class="nobr">
-                <input type="checkbox" id="auto_check" name="auto_check" value="Auto Update" checked>
-                <label for="auto_check">Compute automatically as I type</label>
-            </span>
-            <span class="nobr">
+                <label for="co_check">Cohomology:</label>
                 <input type="checkbox" id="co_check" name="co_check" value="Cohomology">
-                <label for="co_check">Cohomology</label>
             </span>
+            <br/>
             <span class="nobr">
-                <a href="javascript:void(0);" id="permalink_link">Direct link to this computation</a>
+                <label for="coeff">Coefficients:</label>
+                ℤ/<input id="coeff_input" name="coeff_input" type="text" style="text-align:center;" inputmode="numeric" size=3/>ℤ
+            </span>
+            <br/>
+            <span class="nobr">
+                <label for="relative">Relative to subcomplex:</label>
+                <input id="relative" name="relative" type="text" size="72"/>
             </span>
         </div>
+
+        <label for="output_textarea"><h2 id="output_label">Result</h2></label>
+        <textarea id="output_textarea" name="output_textarea" class="output_textarea" readonly></textarea>
 
         <h2>Example Inputs</h2>
         <button onclick="do_example('hollow tetrahedron')">Hollow Tetrahedron</button>
         <button onclick="do_example('hollow cube')">Hollow Cube</button>
         <button onclick="do_example('hollow octahedron')">Hollow Octahedron</button>
+        <button onclick="do_example('globe')">Globular sphere (two hemispheres)</button>
         <button onclick="do_example('sphere_cw')">Sphere (one cell)</button>
         <br/>
         <button onclick="do_example('torus_simp')">Torus (simplicial complex with 18 triangles)</button>
@@ -199,12 +204,20 @@
         <br/>
         <button onclick="do_example('rp2_delta')">Real Projective Plane (Delta complex with two triangles)</button>
         <button onclick="do_example('rp2_cw')">Real Projective Plane (cell complex with one bigon)</button>
-        <br/>
-        <button onclick="do_example('T3')">3-Torus</button>
-        <button onclick="do_example('genus2')">Genus 2 Surface</button>
-        <button onclick="do_example('genus3')">Genus 3 Surface</button>
         <button onclick="do_example('klein')">Klein bottle</button>
         <br/>
+        <button onclick="do_example('genus2_delta')">Genus 2 Surface (8 triangles)</button>
+        <button onclick="do_example('genus2')">Genus 2 Surface (1 octagon)</button>
+        <button onclick="do_example('genus3')">Genus 3 Surface</button>
+        <br/>
+        <button onclick="do_example('T3')">3-Torus</button>
+        <button onclick="do_example('S3')">3-Sphere</button>
+        <button onclick="do_example('sphere_circle')">2-Sphere x Circle</button>
+        <button onclick="do_example('rp3')">RP3</button>
+        <button onclick="do_example('rp2_circle')">RP2 x Circle</button>
+        <button onclick="do_example('klein_circle')">Klein x Circle</button>
+        <br/>
+        <button onclick="do_example('klein_klein')">Klein x Klein</button>
         <button onclick="do_example('z2_nerve')">Nerve(Z/2Z)</button>
         <button onclick="do_example('z3_nerve')">Nerve(Z/3Z)</button>
         <button onclick="do_example('torus_reduced')">Reduced Homology of Torus</button>
@@ -320,7 +333,7 @@
             </p>
             <ul>
                 <li>Start with 〈 <var>a</var>, <var>b</var> | 36<var>b</var> = 28<var>a</var> 〉</li>
-                <li>Add a new variable to get〈 <var>a</var>, <var>b</var>, <var>c</var> | 36<var>b</var> = 28<var>a</var>, <var>c</var> = <var>a</var> − <var>b</var> 〉</li>
+                <li>Add a new variable to get 〈 <var>a</var>, <var>b</var>, <var>c</var> | 36<var>b</var> = 28<var>a</var>, <var>c</var> = <var>a</var> − <var>b</var> 〉</li>
                 <li>Simplify to 〈 <var>a</var>, <var>b</var>, <var>c</var> | 36<var>b</var> = 28(<var>b</var> + <var>c</var>), <var>a</var> = <var>b</var> + <var>c</var> 〉</li>
                 <li>Simplify to 〈 <var>a</var>, <var>b</var>, <var>c</var> | 8<var>b</var> = 28<var>c</var>, <var>a</var> = <var>b</var> + <var>c</var> 〉</li>
                 <li>Eliminate a variable to get 〈 <var>b</var>, <var>c</var> | 8<var>b</var> = 28<var>c</var> 〉</li>
