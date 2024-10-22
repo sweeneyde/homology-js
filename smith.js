@@ -324,26 +324,6 @@ function matrix_multiply(A, num_A_cols, B, num_B_cols) {
     return result;
 }
 
-function cyclic_kernel(x0, m) {
-    // Kernel of the multiplication by x0 map Z --x0--> Z/mZ
-    // Examples: ker(Z --1--> Z) = 0Z
-    //           ker(Z --2--> Z) = 0Z
-    //           ker(Z --0--> Z) = 1Z
-    //           ker(Z --1--> Z/4) = 4Z
-    //           ker(Z --2--> Z/4) = 2Z
-    //           ker(Z --0--> Z/4) = 1Z
-    let [_, __, x] = xgcd(x0, m);
-    if (x == 0n) {
-        return 1n;
-    }
-    else {
-        if (m % x !== 0n) {
-            throw new Error("bad divisibility");
-        }
-        return m / x;
-    }
-}
-
 function homology(A, num_A_cols, B, num_B_cols, coeff) {
     check_rectangular(A, num_A_cols);
     check_rectangular(B, num_B_cols);
@@ -360,68 +340,61 @@ function homology(A, num_A_cols, B, num_B_cols, coeff) {
 
     /*
      * Compute the homology at
-     *        A           B
+     *        A'          B'
      * R^n ------> R^m ------> R^k
      * where R is the cyclic group Z/coeff.
      */
 
     /*
-     * Strategy
-     * --------
-     * Start by using the smith normal form SBT=D. Then:
-     *
-     *     (ker B) = ker(Sinv D Tinv) = ker(D Tinv) = T(ker D).
-     *
-     * Now ker(D) is also im(E) for some m-by-m diagonal matrix E.
-     * So now we have the homology group:
-     *
-     *     H = (ker B)/(im A) = T(im E)/im(A) = Tbar[(im E)/(im Tinv A)]
-     *
-     * Here Tbar[x + im Tinv A] := Tx + im A,
-     * the bijection T descended to the quotient.
-     * We already know that (im Tinv A) is a subset of (im E),
-     * so we can make a new matrix F of the same size as Tinv A
-     * with EF = Tinv A: compute F by dividing out the rows of
-     * Tinv A by the corresponding diagonal entry of E. Now:
-     *
-     *     H = Tbar[im E / im EF] = Tbar[E R^m / EF R^n]
-     *
-     * To compute E R^m / EF R^n using integers, we can quotient
-     * by the coefficient modulus and the image of EF simultaneously:
-     *
-     *     H = Tbar[E Z^m / (EF Z^n + coeff*Z^m)]
+     * We'll operate with the integer matrices A and B
+     * instead of the R-matrices A' and B'.
+     *            A           B
+     *     Z^n ------> Z^m ------> Z^k
+     *      |p         |p           |p
+     *      v    A'    v     B'     v
+     *     R^n ------> R^m ------> R^k
      * 
+     * Take Smith normal form SBT = D.
+     * Now:
      * 
+     *     p(v) in ker B'
+     *     iff B'(p(v)) = 0
+     *     iff p(B(v)) = 0
+     *     iff B(v) in coeff*Z^k
+     *     iff Sinv D Tinv v in coeff*Z^k
+     *     iff D Tinv v in coeff*Z^k
+     *     iff Tv has  Dv in coeff*Z^k
      * 
-     * We'd like to "factor out" the E like we did with T,
-     * but because E is not injective, this isn't as straightforward.
-     * For example, if we're computing
-     *     (0 0)         (0 0)
-     *     (0 2) Z^2     (0 2) Z^2           (0 0)     Z^2
-     *     ---------   = ----------------- = (0 2) -----------
-     *     (0 0 0)       (0 0) (0 0 0)             (0 0 0)
-     *     (4 8 4) Z^3   (0 2) (2 4 2) Z^3         (2 4 2) Z^3
-     *
-     *                   (0 0)    (1)         (0)
-     *                 = (0 2) ( Z(0) (+) Z/2 (1))
-     * ...then applying the E matrix [0 0; 0 2] changes the isomorphism
-     * type from (Z + Z/2) to just Z/2.
-     *
-     * To prevent this and ensure the cokernel has the right isomorphism
-     * type, we can ensure that the zeros are already dead by adding
-     * in extra columns to EF:
-     *     (0 0)
-     *     (0 2) Z^2             (0 0)     Z^2
-     *     ------------------- = (0 2) -----------
-     *     (0 0) (0 0 0 1)             (0 0 0 1)
-     *     (0 2) (2 4 2 0) Z^3         (2 4 2 0) Z^3
-     *
-     *                   (0 0)      (0)
-     *                 = (0 2)  Z/2 (1)
-     *                       (0)
-     *                 = Z/2 (2)
-     * Here, the E matrix was injective on the space spanned by the generators
-     * because
+     * The set {v | D v in coeff*Z^k}
+     * has a basis of vectors [0 ... 0 coeff/Dii 0 ... 0].
+     * Write E for the matrix with these columns (omitting zero columns),
+     * so that {v | Dv in coeff*Z^k} = E Z^l
+     * where E is an m-by-l matrix.
+     * 
+     * Now p(v) in ker(B') iff v in (T E Z^l), so we know the cycles.
+     * Now the homology group is
+     * 
+     *     H = ker(B') / im(A')
+     *       = p(T E Z^l) / p(A Z^n)
+     * 
+     * We can quotient out by the coefficient modulus and by the
+     * boundaries simultaneously:
+     * 
+     *     H = (T E Z^l)/(A Z^n + coeff*Z^m)
+     *       = (T E Z^l)/([A|coeff*id] Z^(n+m))
+     *       = (T E Z^l)/(T Tinv [A|coeff*id] Z^(n+m))
+     *       = (T E Z^l)/(T [Tinv A|coeff*id] Z^(n+m))
+     *       = Tbar ( (E Z^l)/(Tinv [A|coeff*id] Z^(n+m)) )
+     * 
+     * where Tbar([v]):=[Tv] is the map T descended to the quotient.
+     * Because E is diagonal and injective,
+     * we get can undo multiplication by E
+     * to find a matrix F satisfying: E F = Tinv [A|coeff*id]
+     * We then have:
+     * 
+     *     H = Tbar((E Z^l)/(E F Z^(n+m)))
+     *       = Tbar Ebar (Z^l / (F Z^(n+m)))
+     *       = Tbar(Ebar(coker(F)))
      */
 
     let smith_B = smithify(B, num_B_cols);
@@ -429,12 +402,55 @@ function homology(A, num_A_cols, B, num_B_cols, coeff) {
     let Tinv = smith_B.Tinv;
     let D = smith_B.D;
 
-    // Make im(E) == ker(D).
-    // Specifically, im(F) = f_1 R (+) ... (+) f_m R
-    let E_entries = [];
+    function cyclic_kernel(x0, m) {
+        // Kernel of the multiplication by x0 map Z --x0--> Z/mZ
+        // Examples: ker(Z --1--> Z) = 0Z
+        //           ker(Z --2--> Z) = 0Z
+        //           ker(Z --0--> Z) = 1Z
+        //           ker(Z --1--> Z/4) = 4Z
+        //           ker(Z --2--> Z/4) = 2Z
+        //           ker(Z --0--> Z/4) = 1Z
+        let [_, __, x] = xgcd(x0, m);
+        if (x == 0n) {
+            return 1n;
+        }
+        else {
+            if (m % x !== 0n) {
+                throw new Error("bad divisibility");
+            }
+            return m / x;
+        }
+    }
+
+    // Consider the m-by-m diagonal matrix E0
+    // where the nonzero columns are the basis for ker(D).
+    // Because D has the least-divisible entries first,
+    // E0 will have the most-divisible entries first,
+    // so E0 will have all of the zeros first.
+    // The conceptual matrix E will consist of only the nonzero
+    // columns of E0.
+
+    // Store the diagonal entries of E0, but note that
+    // the entries of E omit the initial string of zeros.
+    let E0_entries = [];
     for (let j = 0; j < num_B_cols; j++) {
-        let entry = j >= B.length ? 0n : D[j][j];
-        E_entries.push(cyclic_kernel(entry, coeff));
+        let D_entry = j >= B.length ? 0n : D[j][j];
+        E0_entries.push(cyclic_kernel(D_entry, coeff));
+    }
+    let num_zeros;
+    for (num_zeros = 0; num_zeros < E0_entries.length; num_zeros++) {
+        if (E0_entries[num_zeros] != 0n) {
+            break;
+        }
+    }
+    for (let i = num_zeros; i < E0_entries.length; i++) {
+        if (E0_entries[i] == 0n) {
+            throw new Error("Bad SNF");
+        }
+    }
+
+    if (num_zeros > 0 && coeff != 0n) {
+        throw new Error("cyclic_kernel returned 0 unexpectedly");
     }
 
     let num_Tinv_A_cols = num_A_cols;
@@ -442,6 +458,8 @@ function homology(A, num_A_cols, B, num_B_cols, coeff) {
     check_rectangular(Tinv_A, num_Tinv_A_cols);
     console.assert(Tinv_A.length == num_B_cols);
     if (coeff != 0n) {
+        // if coefficient modulus is nonzero, kill it
+        // by splicing in coeff*(identity matrix)
         for (let i = 0; i < num_B_cols; i++) {
             let row = Tinv_A[i];
             for (let j = 0; j < num_B_cols; j++) {
@@ -451,52 +469,32 @@ function homology(A, num_A_cols, B, num_B_cols, coeff) {
         num_Tinv_A_cols = num_A_cols + num_B_cols;
         check_rectangular(Tinv_A, num_Tinv_A_cols);
     }
-
-    let Einv_Tinv_A = [];
-    for (let i = 0; i < num_B_cols; i++) {
-        let q = E_entries[i];
-        if (q == 0n) {
-            if (coeff != 0n) {
-                throw new Error(`coeff was nonzero ${coeff} but q was zero`);
+    for (let i = 0; i < num_zeros; i++) {
+        Tinv_A[i].forEach((x) => {
+            if (x !== 0n) {
+                throw new Error("rows unexpectedly nonzero");
             }
-            function divzero(x) {
-                if (x !== 0n) {
-                    throw new Error("Entry was unexpectedly nonzero");
-                }
-                return x;
-            }
-            Einv_Tinv_A.push(Tinv_A[i].map(divzero));
-        } else {
-            function divq(x) {
-                if (x % q != 0n) {
-                    throw new Error("Entry was not divisible");
-                }
-                return x / q;
-            }
-            Einv_Tinv_A.push(Tinv_A[i].map(divq));
-        }
+        });
     }
-    let num_Einv_Tinv_A_cols = num_Tinv_A_cols;
-    if (coeff == 0n) {
-        for (let i=0; i < E_entries.length; i++) {
-            let entry = E_entries[i];
-            if (entry == 0n) {
-                // Ensure that things
-                for (let j=0; j < Einv_Tinv_A.length; j++) {
-                    Einv_Tinv_A[j].push(j == i ? 1n : 0n);
-                }
-                num_Einv_Tinv_A_cols += 1;
+    let F = [];
+    for (let i = num_zeros; i < E0_entries.length; i++) {
+        let row = Tinv_A[i];
+        let E_entry = E0_entries[i];
+        row.forEach((x) => {
+            if (x % E_entry != 0n) {
+                throw new Error("Entry was not divisible");
             }
-        }
+        });
+        F.push(row.map((x) => x / E_entry));
     }
-    check_rectangular(Einv_Tinv_A, num_Einv_Tinv_A_cols);
-    let cok = cokernel(Einv_Tinv_A, num_Einv_Tinv_A_cols);
+    let cok = cokernel(F, num_Tinv_A_cols);
 
     function TE(v) {
-        console.assert(v.length == num_B_cols);
-        let Ev = [];
-        for (let i = 0; i < num_B_cols; i++) {
-            Ev.push(v[i] * E_entries[i]);
+        console.assert(v.length == E0_entries.length - num_zeros);
+        // re-introduce the initial zeros
+        let Ev = Array(num_zeros).fill(0n);
+        for (let i = num_zeros; i < E0_entries.length; i++) {
+            Ev.push(v[i - num_zeros] * E0_entries[i]);
         }
         return T.map((row) => {
             s = 0n;
