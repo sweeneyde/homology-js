@@ -259,12 +259,29 @@
                 All groups not listed are trivial.
             </p>
             <p>
-                If the <cite>cohomology</cite> checkbox is checked,
+                If the <cite>Cohomology</cite> checkbox is checked,
                 cohomology is computed instead of homology.
                 For the listed generators, a cell <var>a</var> is
                 identified with its dual cochain, so <var>a</var>(<var>a</var>)=1,
                 but <var>a</var>(<var>x</var>)=0 for any cell <var>x</var>
                 other than <var>a</var>.
+            </p>
+            <p>
+                The <cite>Coefficients</cite> input accepts
+                a nonnegative integer, and determines the
+                coefficient group to compute with.
+                If the box is blank, this is interpreted
+                as using coefficients in ℤ/0ℤ ≅ ℤ,
+                i.e., integral coefficients.
+            </p>
+            <p>
+                In the <cite>Relative to subcomplex</cite>
+                box, list all cells of some (closed) subcomplex,
+                separated by commas.
+                This should be closed under the boundary homomorphism,
+                and the computation will fail if this is not the case.
+                However, the calculator makes no further attempt
+                to detect that you've entered a subcomplex.
             </p>
         </details>
 
@@ -433,61 +450,84 @@
             </ul>
             <h2>Using SNF to compute homology</h2>
             <p>
-                Given ℤ-linear maps <var>A</var> : ℤ<sup><var>n</var></sup> → ℤ<sup><var>m</var></sup>
-                and <var>B</var> : ℤ<sup><var>m</var></sup> → ℤ<sup><var>k</var></sup>
-                satisfying <var>B</var><var>A</var> = 0,
-                we want to compute the homology (ker <var>B</var>) / (im <var>A</var>)
-                at ℤ<sup><var>m</var></sup>.
+                Write <var>R</var> := ℤ/<var>q</var>ℤ for our coefficient group.
+                Given <var>R</var>-linear maps <var>A'</var> : <var>R</var><sup><var>n</var></sup> → <var>R</var><sup><var>m</var></sup>
+                and <var>B'</var> : <var>R</var><sup><var>m</var></sup> → <var>R</var><sup><var>k</var></sup>
+                satisfying <var>B'</var><var>A'</var> = 0,
+                we want to compute the homology (ker <var>B'</var>) / (im <var>A'</var>)
+                at <var>R</var><sup><var>m</var></sup>.
             </p>
             <p>
-                Since <var>B</var>(im <var>A</var>) = 0,
-                we can define <var>B'</var> : (ℤ<sup><var>m</var></sup> / im <var>A</var>) → ℤ<sup><var>k</var></sup>
-                such that <var>B</var>'∘<var>p</var> = <var>B</var>, where
-                <var>p</var> : ℤ<sup><var>m</var></sup> → (ℤ<sup><var>m</var></sup> / im <var>A</var>)
-                is the canonical projection.
-                Now the homology (ker <var>B</var>) / (im <var>A</var>) is exactly ker <var>B</var>',
-                since <var>p</var>(<var>x</var>) ∈ (ℤ<sup><var>m</var></sup> / im <var>A</var>)
-                satisfies <var>B</var>'(<var>p</var>(<var>x</var>)) = 0
-                exactly when <var>x</var> can be taken to satisfy <var>B</var><var>x</var> = 0.
-                We thus wish to compute the kernel of
-                <var>B</var>' : (coker <var>A</var>) → ℤ<sup><var>k</var></sup>.
-            </p>
-            <p>
-                Any torsion elements in coker <var>A</var> must get killed by <var>B</var>',
-                since there is no remaining torsion in ℤ<sup><var>k</var></sup>.
-                We thus compute coker <var>A</var> as in the previous section,
-                and list any torsion generators as living in the homology group
-                ker <var>B</var>'.
-                For each free generators <var>p</var>(<var>x</var>) of coker <var>A</var>,
-                we can find corresponding elements <var>x</var> of ℤ<sup><var>m</var></sup>,
-                and then form a matrix <var>G</var> : ℤ<sup><var>r</var></sup> → ℤ<sup><var>m</var></sup>
-                such that <var>p</var>∘<var>G</var> : ℤ<sup><var>r</var></sup> → coker <var>A</var>
-                embeds the free part of coker <var>A</var>.
-                We are doing this:
+                Write <var>p</var>: ℤ → <var>R</var> for the canonical morphism,
+                and also write <var>p</var>: ℤ<sup><var>m</var></sup> → <var>R</var><sup><var>m</var></sup>.
+                Write <var>A</var> and <var>B</var> for integer matrices representing
+                <var>A'</var> and <var>B'</var> respectively,
+                and not that this makes <var>p</var> a chain map.
+                We begin computing:
             </p>
             <ul style="list-style-type:none;">
                 <li>
-                    (ker <var>B</var>) / (im <var>A</var>)
-                    = ker (<var>B</var>' : coker <var>A</var> → ℤ<sup><var>k</var></sup>)
-                    = ker (<var>B</var>' : Tors(coker <var>A</var>) ⊕ Free(coker <var>A</var>) → ℤ<sup><var>k</var></sup>)
-                    = Tors(coker <var>A</var>) ⊕ ker (<var>B</var>' : <var>p</var><var>G</var>ℤ<sup><var>r</var></sup> → ℤ<sup><var>k</var></sup>)
+                    ker <var>B'</var>
+                    = {<var>p</var>(<var>v</var>) : <var>B'</var><var>p</var>(<var>v</var>) = 0 }
+                    = <var>p</var>({<var>v</var> : <var>B'</var><var>p</var>(<var>v</var>) = 0 })
+                    = <var>p</var>({<var>v</var> : <var>p</var><var>B</var><var>v</var> = 0 })
+                    = <var>p</var>({<var>v</var> : <var>B</var><var>v</var> ∈ <var>q</var>ℤ<sup><var>k</var></sup> })
                 </li>
             </ul>
             <p>
-                The second summand becomes
+                Write the Smith normal form <var>SBT</var>=<var>D</var> for <var>B</var>.
+                Then
+                <var>B</var><var>v</var> ∈ <var>q</var>ℤ<sup><var>k</var></sup>
+                holds iff
+                <var>S</var><sup>−1</sup><var>D</var><var>T</var><sup>−1</sup><var>v</var> ∈ <var>q</var>ℤ<sup><var>k</var></sup>,
+                which holds iff
+                <var>D</var><var>T</var><sup>−1</sup><var>v</var> ∈ <var>q</var>ℤ<sup><var>k</var></sup>.
+                The set of such <var>v</var> is <var>T</var>(<var>D</var><sup>−1</sup>(<var>q</var>ℤ<sup><var>k</var></sup>)),
+                where <var>D</var><sup>−1</sup> denotes preimage.
+                Because D is diagonal, this can be computed explicity:
+                <var>D</var><sup>−1</sup>(<var>q</var>ℤ<sup><var>k</var></sup>) = <var>E</var> ℤ<sup><var>r</var></sup>,
+                where <var>E</var> has as columns the nonzero vectors with a single entry <var>q</var>/<var>D</var><sub><var>ii</var></sub>.
+                We conclude that the cycles are ker <var>B'</var> = <var>p</var><var>T</var><var>E</var> ℤ<sup><var>r</var></sup>.
+            </p>
+            <p>
+                The homolgy is (<var>p</var><var>T</var><var>E</var> ℤ<sup><var>r</var></sup>)/(<var>p</var><var>A</var>ℤ<sup><var>n</var></sup>).
+                For the purpose of only working with integer matrices,
+                we can quotient out by the modulus <var>q</var> (via the map <var>p</var>)
+                and by the boundaries <var>A</var>ℤ<sup><var>n</var></sup> simultaneously:
+                the homology can be computed as (<var>T</var><var>E</var> ℤ<sup><var>r</var></sup>)/(<var>A</var>ℤ<sup><var>n</var></sup> + <var>q</var>ℤ<sup><var>m</var></sup>).
+                We can write this as (<var>T</var><var>E</var> ℤ<sup><var>r</var></sup>)/([<var>A</var>|<var>q</var>id]ℤ<sup><var>m</var>+<var>n</var></sup>)
+                with a block matrix. Now our homology is
             </p>
             <ul style="list-style-type:none;">
                 <li>
-                    ker (<var>B</var>' : <var>p</var><var>G</var>ℤ<sup><var>r</var></sup> → ℤ<sup><var>k</var></sup>)
-                    = {<var>p</var><var>G</var><var>y</var> ∈ <var>p</var><var>G</var>ℤ<sup><var>r</var></sup> : <var>B</var>'<var>p</var><var>G</var><var>y</var> = 0}
-                    = {<var>p</var><var>G</var><var>y</var> : <var>y</var> ∈ ℤ<sup><var>r</var></sup>, <var>B</var><var>G</var><var>y</var> = 0}
-                    = <var>p</var><var>G</var>(ker <var>B</var><var>G</var>)
+                    (<var>T</var><var>E</var> ℤ<sup><var>r</var></sup>)/(<var>T</var><var>T</var><sup>−1</sup>[<var>A</var>|<var>q</var>id]ℤ<sup><var>m</var>+<var>n</var></sup>)
+                    =
+                    [<var>T</var>]
+                    (<var>E</var> ℤ<sup><var>r</var></sup>)/([<var>T</var><sup>−1</sup><var>A</var>|<var>q</var>id]ℤ<sup><var>m</var>+<var>n</var></sup>)
+                    =
+                    [<var>T</var>][<var>E</var>]
+                    (ℤ<sup><var>r</var></sup>)/(<var>F</var> ℤ<sup><var>m</var>+<var>n</var></sup>)
+                    =
+                    [<var>T</var>][<var>E</var>] (coker <var>F</var>).
                 </li>
             </ul>
             <p>
-                Hence we compute ker <var>B</var><var>G</var> as in the previous
-                section, and then apply <var>G</var> to get
-                representatives for the free generators.
+                Above, [<var>T</var>]([v]) := [Tv],
+                i.e., [<var>T</var>] is the map <var>T</var>
+                descended to the quotient.
+                Likewise for <var>E</var>.
+                The matrix <var>F</var>
+                is chosen so that
+                <var>E</var><var>F</var>=[<var>T</var><sup>−1</sup><var>A</var>|<var>q</var>id],
+                and is computed by dividing through
+                each row by the corresponding entry of <var>E</var>
+                and ignoring the zero rows corresponding to zero entries of <var>E</var>.
+                Since <var>T</var> and <var>E</var> are injections,
+                the homology is isomorphic to (coker <var>F</var>),
+                so we can compute generators as above,
+                and then translate them over to the appropriate
+                vectors in ℤ<sup><var>m</var></sup>
+                via <var>TE</var>.
             </p>
         </details>
     </div>

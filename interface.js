@@ -1,4 +1,4 @@
-const face_name_regex = /^[a-zA-Z_][a-zA-Z0-9_]*$/
+const face_name_regex = /^[a-zA-Z_][a-zA-Z0-9_]*$/;
 
 function parse_cell_names(text) {
     let result = new Map();
@@ -27,7 +27,7 @@ function parse_cell_names(text) {
             names = [];
         }
         else {
-            names = rest.split(",").map((s=>s.trim()));
+            names = rest.split(",").map((s)=>s.trim());
             names.forEach((name) => {
                 if (!face_name_regex.test(name)) {
                     throw new Error(`name ${name} is invalid`);
@@ -246,15 +246,15 @@ function update() {
     relative_input,
 ].forEach((element) => {
     if (element.addEventListener) {
-        element.addEventListener('input', update, false);
+        element.addEventListener("input", update, false);
     } else if (element.attachEvent) {
-        element.attachEvent('onpropertychange', update);
+        element.attachEvent("onpropertychange", update);
     }
     else {
         alert("This browser cannot detect when text fields change?");
     }
 })
-co_check.addEventListener('change', update);
+co_check.addEventListener("change", update);
 
 function do_example(ex_name) {
     let [ex_names, ex_boundary] = EXAMPLES.get(ex_name);
